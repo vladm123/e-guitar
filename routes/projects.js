@@ -53,7 +53,11 @@ exports.insert = function(request, response) {
         return;
     }
     
-    model.insert(request, response, project);
+    var projectObject = {
+        'name': project.name,
+        'description': project.description
+    };
+    model.insert(request, response, projectObject);
 };
 
 /*
@@ -77,7 +81,11 @@ exports.updateById = function(request, response) {
         return;
     }
 
-    model.updateById(request, response, id, project);
+    var projectObject = {
+        'name': project.name,
+        'description': project.description
+    };
+    model.updateById(request, response, id, projectObject);
 };
 
 /*

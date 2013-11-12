@@ -45,10 +45,14 @@ exports.insertByProjectId = function(request, response) {
         return;
     }
 
-    // Add the start timestamp to the task object.
-    task.start = new Date().getTime();
+    var taskObject = {
+        'name': task.name,
+        'description': task.description,
 
-    model.insert(request, response, projectid, task);
+        // Add the start timestamp to the task object.
+        'start': new Date().getTime()
+    };
+    model.insertByProjectId(request, response, projectid, taskObject);
 };
 
 /*
@@ -84,7 +88,14 @@ exports.updateByIdProjectId = function(request, response) {
         task.end = new Date().getTime();
     }
 
-    model.updateByIdProjectId(request, response, id, projectid, task);
+    var taskObject = {
+        'name': task.name,
+        'description': task.description,
+
+        // Add the start timestamp to the task object.
+        'start': new Date().getTime()
+    };
+    model.updateByIdProjectId(request, response, id, projectid, taskObject);
 };
 
 /*
