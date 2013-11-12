@@ -14,21 +14,21 @@ var connectionString =
 exports.selectAll = function(request, response, next) {
     client.connect(connectionString, function(error, database) {
         if (error) {
-            response.send(500);
+            response.send(500, "Database connection failed.");
             return;
         }
         
-        var projects = database.collection(collectionName);
-        
-        projects.find({}).toArray(function(error, projects) {
-            if (error) {
-                response.send(500);
-                return;
-            }
-            
-            response.statusCode = 200;
-            next(request, response, projects);
-        });
+        database.collection(collectionName)
+            .find({})
+            .toArray(function(error, projects) {
+                if (error) {
+                    response.send(500, "Database selection failed.");
+                    return;
+                }
+                
+                response.statusCode = 200;
+                next(request, response, projects);
+            });
     });
 };
 
@@ -42,26 +42,25 @@ exports.selectAll = function(request, response, next) {
 exports.selectById = function(request, response, id, next) {
     client.connect(connectionString, function(error, database) {
         if (error) {
-            response.send(500);
+            response.send(500, "Database connection failed.");
             return;
         }
         
-        var projects = database.collection(collectionName);
-        
-        projects.findOne({'_id': new bson(id)}, function(error, project) {
-            if (error) {
-                response.send(500);
-                return;
-            }
-            
-            if (!(response)) {
-                response.send(404);
-                return;
-            }
-            
-            response.statusCode = 200;
-            next(request, response, project);
-        });
+        database.collection(collectionName)
+            .findOne({'_id': new bson(id)}, function(error, project) {
+                if (error) {
+                    response.send(500, "Database selection failed.");
+                    return;
+                }
+                
+                if (!(response)) {
+                    response.send(404, "Project not found.");
+                    return;
+                }
+                
+                response.statusCode = 200;
+                next(request, response, project);
+            });
     });
 };
 
@@ -74,21 +73,20 @@ exports.selectById = function(request, response, id, next) {
 exports.insert = function(request, response, project) {
     client.connect(connectionString, function(error, database) {
         if (error) {
-            response.send(500);
+            response.send(500, "Database connection failed.");
             return;
         }
         
-        var projects = database.collection(collectionName);
-        
-        projects.insert(project, {safe: true}, function(error, projects) {
-            if (error) {
-                response.send(500);
-                return;
-            }
-            
-            response.location('/' + collectionName + '/' + projects[0]._id);
-            response.send(201);
-        });
+        database.collection(collectionName)
+            .insert(project, {safe: true}, function(error, projects) {
+                if (error) {
+                    response.send(500, "Database insertion failed.");
+                    return;
+                }
+                
+                response.location('/projects/' + projects[0]._id);
+                response.send(201);
+            });
     });
 };
 
@@ -102,25 +100,27 @@ exports.insert = function(request, response, project) {
 exports.updateById = function(request, response, id, project) {
     client.connect(connectionString, function(error, database) {
         if (error) {
-            response.send(500);
+            response.send(500, "Database connection failed.");
             return;
         }
         
-        var projects = database.collection(collectionName);
-        
-        projects.update({'_id': new bson(id)}, project, {safe: true}, function(error, project) {
-            if (error) {
-                response.send(500);
-                return;
-            }
-            
-            if (!(project)) {
-                response.send(404);
-                return;
-            }
-            
-            response.send(204);
-        });
+        database.collection(collectionName)
+            .update({'_id': new bson(id)},
+                project,
+                {safe: true},
+                function(error, project) {
+                    if (error) {
+                        response.send(500, "Database update failed.");
+                        return;
+                    }
+                    
+                    if (!(project)) {
+                        response.send(404, "Project not found.");
+                        return;
+                    }
+                    
+                    response.send(204);
+                });
     });
 };
 
@@ -133,27 +133,28 @@ exports.updateById = function(request, response, id, project) {
 exports.deleteById = function(request, response, id) {
     client.connect(connectionString, function(error, database) {
         if (error) {
-            response.send(500);
+            response.send(500, "Database connection failed.");
             return;
         }
         
-        var projects = database.collection(collectionName);
-        
-        projects.remove({'_id': new bson(id)}, {safe: true}, function(error, projects) {
-            if (error) {
-                response.send(500);
-                return;
-            }
-            
-            console.log(projects);
-            console.log(projects[0]);
-            
-            if (!(projects[0])) {
-                response.send(404);
-                return;
-            }
-            
-            response.send(204);
-        });
+        database.collection(collectionName)
+            .remove({'_id': new bson(id)},
+                {safe: true},
+                function(error, projects) {
+                    if (error) {
+                        response.send(500, "Database deletion failed.");
+                        return;
+                    }
+                    
+                    console.log(projects);
+                    console.log(projects[0]);
+                    
+                    if (!(projects[0])) {
+                        response.send(404, "Project not found.");
+                        return;
+                    }
+                    
+                    response.send(204);
+                });
     });
 };

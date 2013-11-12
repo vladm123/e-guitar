@@ -24,8 +24,10 @@ app.configure(function() {
     }
 });
 
+// General routes
 app.get('/', function(req, res) { res.send("OK"); })
 
+// Routes for projects
 var projects = require('./routes/projects');
 app.get('/projects', projects.selectAll);
 app.get('/projects/:id', projects.selectById);
@@ -33,14 +35,13 @@ app.post('/projects', projects.insert);
 app.post('/projects/:id/update', projects.updateById);
 app.post('/projects/:id/delete', projects.deleteById);
 
+// Routes for tasks inside projects
+var tasks = require('./routes/tasks');
+app.get('projects/:projectid/tasks',tasks.selectByProjectId);
+app.post('projects/:projectid/tasks', tasks.insertByProjectId);
+app.post('projects/:projectid/tasks/:id/update', tasks.updateById);
+app.post('projects/:projectid/tasks/:id/delete', tasks.deleteById);
+
 http.createServer(app).listen(app.get('port'), function(){
     console.log('Express server listening on port ' + app.get('port'));
 });
-
-
-/*
-request.files."name of the input field".path -> where it is uploaded
-
-
-
-*/
