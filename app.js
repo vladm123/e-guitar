@@ -33,16 +33,15 @@ app.get('/', function(req, res) { res.send("OK"); })
 var projects = require('./routes/projects');
 app.get('/projects', projects.selectAll);
 app.get('/projects/:id', projects.selectById);
-app.post('/projects', projects.insert);
+app.post('/projects/insert', projects.insert);
 app.post('/projects/:id/update', projects.updateById);
 app.post('/projects/:id/delete', projects.deleteById);
 
 // Routes for tasks inside projects
 var tasks = require('./routes/tasks');
-app.get('projects/:projectid/tasks',tasks.selectByProjectId);
-app.post('projects/:projectid/tasks', tasks.insertByProjectId);
-app.post('projects/:projectid/tasks/:id/update', tasks.updateByIdProjectId);
-app.post('projects/:projectid/tasks/:id/delete', tasks.deleteByIdProjectId);
+app.post('projects/:projectid/tasks/insert', tasks.insertByTaskProjectId);
+app.post('projects/:projectid/tasks/update', tasks.updateByTaskProjectId);
+app.post('projects/:projectid/tasks/delete', tasks.deleteByTaskProjectId);
 
 http.createServer(app).listen(app.get('port'), function(){
     console.log('Express server listening on port ' + app.get('port'));

@@ -2,34 +2,11 @@ var model = require('../models/tasks');
 var idRegex = /\b[0-9A-F]{24}\b/gi;
 
 /*
- * Selects all tasks.
- * @param request The HTTP request object.
- * @param response The HTTP response object.
- */
-exports.selectByProjectId = function(request, response) {
-    var projectid = request.params.projectid;
-    
-    // ID is a 24-hex string.
-    if (!(projectid.match(idRegex))) {
-        response.send(400, "Invalid project identifier.");
-        return;
-    }
-
-    model.selectAll(request, response, projectid, function(request, response, tasks) {
-        response.format({
-            json: function() { 
-                response.json(tasks);
-            }
-        });
-    });
-};
-
-/*
  * Inserts a task.
  * @param request The HTTP request object.
  * @param response The HTTP response object.
  */
-exports.insertByProjectId = function(request, response) {
+exports.insertByTaskProjectId = function(request, response) {
     var projectid = request.params.projectid;
     var task = request.body;
 
@@ -52,7 +29,7 @@ exports.insertByProjectId = function(request, response) {
         // Add the start timestamp to the task object.
         'start': new Date().getTime()
     };
-    model.insertByProjectId(request, response, projectid, taskObject);
+    model.insertByTaskProjectId(request, response, taskObject, projectid);
 };
 
 /*
@@ -60,20 +37,13 @@ exports.insertByProjectId = function(request, response) {
  * @param request The HTTP request object.
  * @param response The HTTP response object.
  */
-exports.updateByIdProjectId = function(request, response) {
+exports.updateByTaskProjectId = function(request, response) {
     var projectid = request.params.projectid;
-    var id = request.params.id;
     var task = request.body;
     
     // ID is a 24-hex string.
     if (!(projectid.match(idRegex))) {
         response.send(400, "Invalid project identifier.");
-        return;
-    }
-
-    // ID is a 24-hex string.
-    if (!(id.match(idRegex))) {
-        response.send(400, "Invalid task identifier.");
         return;
     }
 
@@ -83,19 +53,19 @@ exports.updateByIdProjectId = function(request, response) {
         return;
     }
 
-    // Add the end timestamp to the task object.
-    if (!(task.end)) {
-        task.end = new Date().getTime();
+    // Start is mandatory.
+    if (!(task.start)) {
+        response.send(400, "Missing task start.");
+        return;
     }
 
     var taskObject = {
         'name': task.name,
         'description': task.description,
-
-        // Add the start timestamp to the task object.
-        'start': new Date().getTime()
+        'start': task.start,
+        'end': task.end
     };
-    model.updateByIdProjectId(request, response, id, projectid, taskObject);
+    model.updateByTaskProjectId(request, response, taskObject, projectid);
 };
 
 /*
@@ -103,9 +73,9 @@ exports.updateByIdProjectId = function(request, response) {
  * @param request The HTTP request object.
  * @param response The HTTP response object.
  */
-exports.deleteByIdProjectId = function(request, response) {
+exports.deleteByTaskProjectId = function(request, response) {
     var projectid = request.params.projectid;
-    var id = request.params.id;
+    var task = request.body;
     
     // ID is a 24-hex string.
     if (!(projectid.match(idRegex))) {
@@ -113,11 +83,14 @@ exports.deleteByIdProjectId = function(request, response) {
         return;
     }
 
-    // ID is a 24-hex string.
-    if (!(id.match(idRegex))) {
-        response.send(400, "Invalid task identifier.");
+    // Start is mandatory.
+    if (!(task.start)) {
+        response.send(400, "Missing task start.");
         return;
     }
 
-    model.deleteByIdProjectId(request, response, id, projectid);
+    var taskObject = {
+        'start' : task.start
+    };
+    model.deleteByTaskProjectId(request, response, taskObject, projectid);
 };
