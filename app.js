@@ -5,6 +5,8 @@ var path = require('path');
 var app = express();
 
 app.configure(function() {
+    
+    // Bulk configure, should remove if not used
     app.set('port', process.env.PORT || 3000);
     app.set('views', path.join(__dirname, 'views'));
     app.set('view engine', 'jade');
@@ -39,8 +41,8 @@ app.post('/projects/:id/delete', projects.deleteById);
 var tasks = require('./routes/tasks');
 app.get('projects/:projectid/tasks',tasks.selectByProjectId);
 app.post('projects/:projectid/tasks', tasks.insertByProjectId);
-app.post('projects/:projectid/tasks/:id/update', tasks.updateById);
-app.post('projects/:projectid/tasks/:id/delete', tasks.deleteById);
+app.post('projects/:projectid/tasks/:id/update', tasks.updateByIdProjectId);
+app.post('projects/:projectid/tasks/:id/delete', tasks.deleteByIdProjectId);
 
 http.createServer(app).listen(app.get('port'), function(){
     console.log('Express server listening on port ' + app.get('port'));

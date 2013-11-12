@@ -1,4 +1,5 @@
 var model = require('../models/projects');
+var idRegex = /\b[0-9A-F]{24}\b/gi;
 
 /*
  * Selects all projects.
@@ -22,6 +23,12 @@ exports.selectAll = function(request, response) {
  */
 exports.selectById = function(request, response) {
     var id = request.params.id;
+    
+    if (!(id.match(idRegex))) {
+        response.send(404, "Project not found.");
+        return;
+    }
+
     model.selectById(request, response, id, function(request, response, project) {
         response.format({
             json: function() {
@@ -49,6 +56,12 @@ exports.insert = function(request, response) {
 exports.updateById = function(request, response) {
     var id = request.params.id;
     var project = request.body;
+
+    if (!(id.match(idRegex))) {
+        response.send(404, "Project not found.");
+        return;
+    }
+
     model.updateById(request, response, id, project);
 };
 
@@ -59,5 +72,11 @@ exports.updateById = function(request, response) {
  */
 exports.deleteById = function(request, response) {
     var id = request.params.id;
+    
+    if (!(id.match(idRegex))) {
+        response.send(404, "Project not found.");
+        return;
+    }
+
     model.deleteById(request, response, id);
 };

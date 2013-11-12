@@ -1,4 +1,5 @@
 var model = require('../models/tasks');
+var idRegex = /\b[0-9A-F]{24}\b/gi;
 
 /*
  * Selects all tasks.
@@ -7,6 +8,12 @@ var model = require('../models/tasks');
  */
 exports.selectByProjectId = function(request, response) {
     var projectid = request.params.projectid;
+    
+    if (!(projectid.match(idRegex))) {
+        response.send(404, "Project not found.");
+        return;
+    }
+
     model.selectAll(request, response, projectid, function(request, response, tasks) {
         response.format({
             json: function() { 
@@ -24,6 +31,12 @@ exports.selectByProjectId = function(request, response) {
 exports.insertByProjectId = function(request, response) {
     var projectid = request.params.projectid;
     var task = request.body;
+
+    if (!(projectid.match(idRegex))) {
+        response.send(404, "Project not found.");
+        return;
+    }
+
     model.insert(request, response, projectid, task);
 };
 
@@ -36,6 +49,17 @@ exports.updateByIdProjectId = function(request, response) {
     var projectid = request.params.projectid;
     var id = request.params.id;
     var task = request.body;
+    
+    if (!(projectid.match(idRegex))) {
+        response.send(404, "Project not found.");
+        return;
+    }
+
+    if (!(id.match(idRegex))) {
+        response.send(404, "Task not found.");
+        return;
+    }
+
     model.updateByIdProjectId(request, response, id, projectid, task);
 };
 
@@ -47,5 +71,16 @@ exports.updateByIdProjectId = function(request, response) {
 exports.deleteByIdProjectId = function(request, response) {
     var projectid = request.params.projectid;
     var id = request.params.id;
+    
+    if (!(projectid.match(idRegex))) {
+        response.send(404, "Project not found.");
+        return;
+    }
+
+    if (!(id.match(idRegex))) {
+        response.send(404, "Task not found.");
+        return;
+    }
+
     model.deleteByIdProjectId(request, response, id, projectid);
 };
