@@ -38,7 +38,7 @@ exports.selectById = function(request, response) {
  */
 exports.insert = function(request, response) {
     var project = request.body;
-    model.insert(project);
+    model.insert(request, response, project);
 };
 
 /*

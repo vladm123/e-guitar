@@ -99,7 +99,7 @@ exports.insert = function(request, response, project) {
  * @param id The identifier for the project to be updated.
  * @param project The project to be updated.
  */ 
-exports.update = function(request, response, id, project) {
+exports.updateById = function(request, response, id, project) {
     client.connect(connectionString, function(error, database) {
         if (error) {
             response.send(500);
@@ -144,6 +144,9 @@ exports.deleteById = function(request, response, id) {
                 response.send(500);
                 return;
             }
+            
+            console.log(projects);
+            console.log(projects[0]);
             
             if (!(projects[0])) {
                 response.send(404);
