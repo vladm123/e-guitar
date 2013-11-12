@@ -55,7 +55,10 @@ exports.insert = function(request, response) {
     
     var projectObject = {
         'name': project.name,
-        'description': project.description
+        'description': project.description,
+        
+        // Add an empty array of tasks.
+        'tasks': []
     };
     model.insert(request, response, projectObject);
 };
@@ -83,7 +86,8 @@ exports.updateById = function(request, response) {
 
     var projectObject = {
         'name': project.name,
-        'description': project.description
+        'description': project.description,
+        'tasks': project.tasks
     };
     model.updateById(request, response, id, projectObject);
 };

@@ -33,7 +33,7 @@ exports.insertByTaskProjectId = function(request, response) {
 };
 
 /*
- * Updates a task by id and project id.
+ * Updates a task by project id.
  * @param request The HTTP request object.
  * @param response The HTTP response object.
  */
@@ -69,7 +69,7 @@ exports.updateByTaskProjectId = function(request, response) {
 };
 
 /*
- * Deletes a task by id and project id.
+ * Deletes a task by project id.
  * @param request The HTTP request object.
  * @param response The HTTP response object.
  */
