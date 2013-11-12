@@ -1,9 +1,10 @@
+var config = require('../config');
 var mongo = require('mongodb');
 var client = mongo.MongoClient;
 var bson = mongo.BSONPure.ObjectID;
-var collectionName = 'projects';
-var connectionString =
-    "mongodb://vladmanea:vladm123@ds053978.mongolab.com:53978/e-guitar";
+
+var collectionName = config.data.database.mongodb.collection;
+var connectionString = config.data.database.mongodb.connectionString;
 
 /*
  * Inserts a task.

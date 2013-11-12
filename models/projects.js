@@ -1,9 +1,10 @@
+var config = require('../config');
 var mongo = require('mongodb');
 var client = mongo.MongoClient;
 var bson = mongo.BSONPure.ObjectID;
-var collectionName = 'projects';
-var connectionString =
-    "mongodb://vladmanea:vladm123@ds053978.mongolab.com:53978/e-guitar";
+
+var collectionName = config.data.database.mongodb.collection;
+var connectionString = config.data.database.mongodb.connectionString;
 
 /*
  * Selects all projects.
@@ -53,7 +54,7 @@ exports.selectById = function(request, response, id, next) {
                     return;
                 }
                 
-                if (!(response)) {
+                if (!(project)) {
                     response.send(404, "Project not found.");
                     return;
                 }
@@ -140,17 +141,9 @@ exports.deleteById = function(request, response, id) {
         database.collection(collectionName)
             .remove({'_id': new bson(id)},
                 {safe: true},
-                function(error, projects) {
+                function(error, result) {
                     if (error) {
                         response.send(500, "Database deletion failed.");
-                        return;
-                    }
-                    
-                    console.log(projects);
-                    console.log(projects[0]);
-                    
-                    if (!(projects[0])) {
-                        response.send(404, "Project not found.");
                         return;
                     }
                     

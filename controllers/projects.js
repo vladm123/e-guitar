@@ -1,5 +1,8 @@
-var model = require('../models/projects');
-var idRegex = /\b[0-9A-F]{24}\b/gi;
+var config = require('../config');
+var path = require('path');
+
+var model = require(path.join(config.data.model.path, 'projects'));
+var idRegex = config.data.validation.idRegex;
 
 /*
  * Selects all projects.
@@ -46,13 +49,13 @@ exports.selectById = function(request, response) {
  */
 exports.insert = function(request, response) {
     var project = request.body;
-    
+	
     // Name is mandatory.
     if (!(project.name)) {
         response.send(400, "Missing project name.");
         return;
     }
-    
+	
     var projectObject = {
         'name': project.name,
         'description': project.description,
@@ -75,6 +78,12 @@ exports.updateById = function(request, response) {
     // Name is mandatory.
     if (!(project.name)) {
         response.send(400, "Missing project name.");
+        return;
+    }
+	
+	// Tasks is mandatory.
+    if (!(project.tasks)) {
+        response.send(400, "Missing project tasks.");
         return;
     }
 

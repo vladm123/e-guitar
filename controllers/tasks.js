@@ -1,5 +1,9 @@
-var model = require('../models/tasks');
-var idRegex = /\b[0-9A-F]{24}\b/gi;
+var config = require('../config');
+var path = require('path');
+
+var model = require(path.join(config.data.model.path, 'tasks'));
+var idRegex = config.data.validation.idRegex;
+var lgRegex = config.data.validation.lgRegex;
 
 /*
  * Inserts a task.
@@ -21,13 +25,13 @@ exports.insertByTaskProjectId = function(request, response) {
         response.send(400, "Missing task name.");
         return;
     }
-
+	
     var taskObject = {
         'name': task.name,
         'description': task.description,
 
-        // Add the start timestamp to the task object.
-        'start': new Date().getTime()
+        // Add the start time stamp to the task object.
+        'start': new Date().getTime(),
     };
     model.insertByTaskProjectId(request, response, taskObject, projectid);
 };
@@ -58,6 +62,18 @@ exports.updateByTaskProjectId = function(request, response) {
         response.send(400, "Missing task start.");
         return;
     }
+	
+	// Start matches a long number.
+	if (!(task.start.match(lgRegex))) {
+        response.send(400, "Invalid task start.");
+        return;
+	}
+
+	// End matches a long number, if exists.
+	if ((task.end) && !(task.end.match(lgRegex))) {
+        response.send(400, "Invalid task end.");
+        return;
+	}
 
     var taskObject = {
         'name': task.name,
@@ -88,6 +104,12 @@ exports.deleteByTaskProjectId = function(request, response) {
         response.send(400, "Missing task start.");
         return;
     }
+	
+	// Start matches a long number.
+	if (!(task.start.match(lgRegex))) {
+        response.send(400, "Invalid task start.");
+        return;
+	}
 
     var taskObject = {
         'start' : task.start
