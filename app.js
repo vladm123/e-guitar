@@ -13,6 +13,7 @@ app.configure(function() {
     app.use(express.json());
     app.use(express.urlencoded());
     app.use(express.methodOverride());
+    app.use(express.bodyParser({keepExtensions: true, uploadDir: path.join(__dirname, "screenshots")}));
     app.use(express.cookieParser('your secret here'));
     app.use(express.session());
     app.use(app.router);
@@ -37,3 +38,11 @@ app.delete('/projects/:id', projects.deleteById);
 http.createServer(app).listen(app.get('port'), function(){
     console.log('Express server listening on port ' + app.get('port'));
 });
+
+
+/*
+request.files."name of the input field".path -> where it is uploaded
+
+
+
+*/
