@@ -9,8 +9,9 @@ var idRegex = /\b[0-9A-F]{24}\b/gi;
 exports.selectByProjectId = function(request, response) {
     var projectid = request.params.projectid;
     
+    // ID is a 24-hex string.
     if (!(projectid.match(idRegex))) {
-        response.send(404, "Project not found.");
+        response.send(400, "Invalid project identifier.");
         return;
     }
 
@@ -32,10 +33,20 @@ exports.insertByProjectId = function(request, response) {
     var projectid = request.params.projectid;
     var task = request.body;
 
+    // ID is a 24-hex string.
     if (!(projectid.match(idRegex))) {
-        response.send(404, "Project not found.");
+        response.send(400, "Invalid project identifier.");
         return;
     }
+    
+    // Name is mandatory.
+    if (!(task.name)) {
+        response.send(400, "Missing task name.");
+        return;
+    }
+
+    // Add the start timestamp to the task object.
+    task.start = new Date().getTime();
 
     model.insert(request, response, projectid, task);
 };
@@ -50,14 +61,27 @@ exports.updateByIdProjectId = function(request, response) {
     var id = request.params.id;
     var task = request.body;
     
+    // ID is a 24-hex string.
     if (!(projectid.match(idRegex))) {
-        response.send(404, "Project not found.");
+        response.send(400, "Invalid project identifier.");
         return;
     }
 
+    // ID is a 24-hex string.
     if (!(id.match(idRegex))) {
-        response.send(404, "Task not found.");
+        response.send(400, "Invalid task identifier.");
         return;
+    }
+
+    // Name is mandatory.
+    if (!(task.name)) {
+        response.send(400, "Missing task name.");
+        return;
+    }
+
+    // Add the end timestamp to the task object.
+    if (!(task.end)) {
+        task.end = new Date().getTime();
     }
 
     model.updateByIdProjectId(request, response, id, projectid, task);
@@ -72,13 +96,15 @@ exports.deleteByIdProjectId = function(request, response) {
     var projectid = request.params.projectid;
     var id = request.params.id;
     
+    // ID is a 24-hex string.
     if (!(projectid.match(idRegex))) {
-        response.send(404, "Project not found.");
+        response.send(400, "Invalid project identifier.");
         return;
     }
 
+    // ID is a 24-hex string.
     if (!(id.match(idRegex))) {
-        response.send(404, "Task not found.");
+        response.send(400, "Invalid task identifier.");
         return;
     }
 

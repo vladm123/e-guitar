@@ -24,8 +24,9 @@ exports.selectAll = function(request, response) {
 exports.selectById = function(request, response) {
     var id = request.params.id;
     
+    // ID is a 24-hex string.
     if (!(id.match(idRegex))) {
-        response.send(404, "Project not found.");
+        response.send(400, "Invalid project identifier.");
         return;
     }
 
@@ -45,6 +46,13 @@ exports.selectById = function(request, response) {
  */
 exports.insert = function(request, response) {
     var project = request.body;
+    
+    // Name is mandatory.
+    if (!(project.name)) {
+        response.send(400, "Missing project name.");
+        return;
+    }
+    
     model.insert(request, response, project);
 };
 
@@ -57,8 +65,15 @@ exports.updateById = function(request, response) {
     var id = request.params.id;
     var project = request.body;
 
+    // Name is mandatory.
+    if (!(project.name)) {
+        response.send(400, "Missing project name.");
+        return;
+    }
+
+    // ID is a 24-hex string.
     if (!(id.match(idRegex))) {
-        response.send(404, "Project not found.");
+        response.send(400, "Invalid project identifier.");
         return;
     }
 
@@ -73,8 +88,9 @@ exports.updateById = function(request, response) {
 exports.deleteById = function(request, response) {
     var id = request.params.id;
     
+    // ID is a 24-hex string.
     if (!(id.match(idRegex))) {
-        response.send(404, "Project not found.");
+        response.send(400, "Invalid project identifier.");
         return;
     }
 
