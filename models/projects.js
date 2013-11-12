@@ -7,15 +7,26 @@ var connectionString =
 
 /*
  * Selects all projects.
- * @param next The function called to process the result.
  * @param request The HTTP request object.
  * @param response The HTTP response object.
+ * @param next The function called to process the result.
  */ 
-exports.selectAll = function(next, request, response) {
+exports.selectAll = function(request, response, next) {
     client.connect(connectionString, function(error, database) {
+        if (error) {
+            response.send(500);
+            return;
+        }
+        
         var projects = database.collection(collectionName);
         
         projects.find({}).toArray(function(error, projects) {
+            if (error) {
+                response.send(500);
+                return;
+            }
+            
+            response.statusCode = 200;
             next(request, response, projects);
         });
     });
@@ -23,71 +34,123 @@ exports.selectAll = function(next, request, response) {
 
 /*
  * Selects a project by id.
- * @param id The identifier for the project to be selected.
- * @param next The function called to process the result.
  * @param request The HTTP request object.
  * @param response The HTTP response object.
+ * @param id The identifier for the project to be selected.
+ * @param next The function called to process the result.
  */ 
-exports.selectById = function(id, next, request, response) {
+exports.selectById = function(request, response, id, next) {
     client.connect(connectionString, function(error, database) {
+        if (error) {
+            response.send(500);
+            return;
+        }
+        
         var projects = database.collection(collectionName);
         
         projects.findOne({'_id': new bson(id)}, function(error, project) {
+            if (error) {
+                response.send(500);
+                return;
+            }
+            
+            if (!(response)) {
+                response.send(404);
+                return;
+            }
+            
+            response.statusCode = 200;
             next(request, response, project);
         });
     });
-}
+};
 
 /*
  * Inserts a project.
- * @param project The project to be inserted; the id will be auto.
- * @param next The function called to process the result.
  * @param request The HTTP request object.
  * @param response The HTTP response object.
+ * @param project The project to be inserted; the id will be auto.
  */ 
-exports.insert = function(project, next, request, response) {
+exports.insert = function(request, response, project) {
     client.connect(connectionString, function(error, database) {
+        if (error) {
+            response.send(500);
+            return;
+        }
+        
         var projects = database.collection(collectionName);
         
         projects.insert(project, {safe: true}, function(error, projects) {
-            next(request, response, projects[0]);
+            if (error) {
+                response.send(500);
+                return;
+            }
+            
+            response.location('/' + collectionName + '/' + projects[0]._id);
+            response.send(201);
         });
     });
 };
 
 /*
  * Updates a project.
- * @param id The identifier for the project to be updated.
- * @param project The project to be updated.
- * @param next The function called to process the result.
  * @param request The HTTP request object.
  * @param response The HTTP response object.
+ * @param id The identifier for the project to be updated.
+ * @param project The project to be updated.
  */ 
-exports.update = function(id, project, next, request, response) {
+exports.update = function(request, response, id, project) {
     client.connect(connectionString, function(error, database) {
+        if (error) {
+            response.send(500);
+            return;
+        }
+        
         var projects = database.collection(collectionName);
         
         projects.update({'_id': new bson(id)}, project, {safe: true}, function(error, project) {
-            next(request, response, project);          
+            if (error) {
+                response.send(500);
+                return;
+            }
+            
+            if (!(project)) {
+                response.send(404);
+                return;
+            }
+            
+            response.send(204);
         });
     });
 };
 
 /*
  * Deletes a project by id.
- * @param id The identifier for the project to be deleted.
- * @param next The function called to process the result.
  * @param request The HTTP request object.
  * @param response The HTTP response object.
+ * @param id The identifier for the project to be deleted.
  */ 
-exports.deleteById = function(id, next, request, response) {
+exports.deleteById = function(request, response, id) {
     client.connect(connectionString, function(error, database) {
+        if (error) {
+            response.send(500);
+            return;
+        }
+        
         var projects = database.collection(collectionName);
         
         projects.remove({'_id': new bson(id)}, {safe: true}, function(error, projects) {
-            console.log(projects);
-            console.log(projects[0]);
-            next(request, response, projects[0]);
+            if (error) {
+                response.send(500);
+                return;
+            }
+            
+            if (!(projects[0])) {
+                response.send(404);
+                return;
+            }
+            
+            response.send(204);
         });
     });
-}
+};
