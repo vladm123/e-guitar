@@ -8,13 +8,15 @@ var connectionString =
 /*
  * Selects all projects.
  * @param next The function called to process the result.
+ * @param request The HTTP request object.
+ * @param response The HTTP response object.
  */ 
-exports.selectAll = function(next) {
+exports.selectAll = function(next, request, response) {
     client.connect(connectionString, function(error, database) {
         var projects = database.collection(collectionName);
         
         projects.find({}).toArray(function(error, projects) {
-            next(projects);
+            next(request, response, projects);
         });
     });
 };
@@ -23,13 +25,15 @@ exports.selectAll = function(next) {
  * Selects a project by id.
  * @param id The identifier for the project to be selected.
  * @param next The function called to process the result.
+ * @param request The HTTP request object.
+ * @param response The HTTP response object.
  */ 
-exports.selectById = function(id, next) {
+exports.selectById = function(id, next, request, response) {
     client.connect(connectionString, function(error, database) {
         var projects = database.collection(collectionName);
         
         projects.findOne({'_id': new bson(id)}, function(error, project) {
-            next(project);
+            next(request, response, project);
         });
     });
 }
@@ -38,13 +42,15 @@ exports.selectById = function(id, next) {
  * Inserts a project.
  * @param project The project to be inserted; the id will be auto.
  * @param next The function called to process the result.
+ * @param request The HTTP request object.
+ * @param response The HTTP response object.
  */ 
-exports.insert = function(project, next) {
+exports.insert = function(project, next, request, response) {
     client.connect(connectionString, function(error, database) {
         var projects = database.collection(collectionName);
         
         projects.insert(project, {safe: true}, function(error, projects) {
-            next(projects[0]);
+            next(request, response, projects[0]);
         });
     });
 };
@@ -54,13 +60,15 @@ exports.insert = function(project, next) {
  * @param id The identifier for the project to be updated.
  * @param project The project to be updated.
  * @param next The function called to process the result.
+ * @param request The HTTP request object.
+ * @param response The HTTP response object.
  */ 
-exports.update = function(id, project, next) {
+exports.update = function(id, project, next, request, response) {
     client.connect(connectionString, function(error, database) {
         var projects = database.collection(collectionName);
         
         projects.update({'_id': new bson(id)}, project, {safe: true}, function(error, project) {
-            next(project);          
+            next(request, response, project);          
         });
     });
 };
@@ -69,14 +77,17 @@ exports.update = function(id, project, next) {
  * Deletes a project by id.
  * @param id The identifier for the project to be deleted.
  * @param next The function called to process the result.
+ * @param request The HTTP request object.
+ * @param response The HTTP response object.
  */ 
-exports.deleteById = function(id, next) {
+exports.deleteById = function(id, next, request, response) {
     client.connect(connectionString, function(error, database) {
         var projects = database.collection(collectionName);
         
         projects.remove({'_id': new bson(id)}, {safe: true}, function(error, projects) {
             console.log(projects);
-            next(projects[0]);
+            console.log(projects[0]);
+            next(request, response, projects[0]);
         });
     });
 }

@@ -7,7 +7,7 @@ var model = require('../models/projects');
  */
 exports.selectAll = function(request, response) {
     model.selectAll(function(projects) {
-        response.send(projects);
+        response.send(request, response, projects);
     });
 };
 
@@ -19,7 +19,7 @@ exports.selectAll = function(request, response) {
 exports.selectById = function(request, response) {
     var id = request.params.id;
     model.selectById(id, function(project) {
-        response.send(project);
+        response.send(request, response, project);
     })
 }
 
@@ -31,7 +31,7 @@ exports.selectById = function(request, response) {
 exports.insert = function(request, response) {
     var project = request.body;
     model.insert(project, function(project) {
-        response.send(project);
+        response.send(request, response, project);
     });
 };
 
@@ -44,7 +44,7 @@ exports.updateById = function(request, response) {
     var id = request.params.id;
     var project = request.body;
     model.updateById(id, project, function(project) {
-        response.send(project);
+        response.send(request, response, project);
     });
 };
 
@@ -56,6 +56,6 @@ exports.updateById = function(request, response) {
 exports.deleteById = function(request, response) {
     var id = request.params.id;
     model.deleteById(id, function(project) {
-        response.send(project);
+        response.send(request, response, project);
     });
 };
