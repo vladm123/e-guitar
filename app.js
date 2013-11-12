@@ -1,7 +1,6 @@
 var express = require('express');
 var http = require('http');
 var path = require('path');
-var projects = require('./routes/projects');
 
 var app = express();
 
@@ -28,12 +27,12 @@ app.configure(function() {
 
 app.get('/', function(req, res) { res.send("OK"); })
 
+var projects = require('./routes/projects');
 app.get('/projects', projects.selectAll);
 app.get('/projects/:id', projects.selectById);
-app.get('/projectsinsert', projects.insert);
-app.get('/projectsdelete/:id', projects.deleteById);
-// app.put('/projects/:id', projects.updateById);
-// app.delete('/projects/:id', projects.deleteById);
+app.post('/projects', projects.insert);
+app.put('/projects/:id', projects.updateById);
+app.delete('/projects/:id', projects.deleteById);
 
 http.createServer(app).listen(app.get('port'), function(){
     console.log('Express server listening on port ' + app.get('port'));
