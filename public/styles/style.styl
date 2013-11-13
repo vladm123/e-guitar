@@ -1,8 +1,8 @@
 html
-	background-color: #fff
+	background-color: #eee
 
 body
-	background-image: linear-gradient(to bottom, #eee, #fff)
+	background-color: #eee
 	margin: 0
 	margin-left: auto
 	margin-right: auto
@@ -75,11 +75,22 @@ body > div > div > aside
 	white-space: nowrap
 	
 body > div > div > div
-	background-color: #f0f
 	clear:both
-	text-align: center
+	height: 100px
+	position: relative
+	background-image: url('strings.png')
 	
 body > div > div > div > div
-	border-top-left-radius: 100%
+	background-color: #f30
+	border: 4px solid #f30
 	border-bottom-left-radius: 100%
 	border-bottom-right-radius: 100%
+	border-top-left-radius: 100%
+	border-top-right-radius: 100%
+	box-shadow 0 0 5px #eee
+	color: #fff
+	overflow: hidden
+	position: absolute
+	
+body > div > div > div > div.progress
+	background-color: #fff

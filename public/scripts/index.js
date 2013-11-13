@@ -5,18 +5,18 @@ function populateTasks(tasks, $container) {
 	var maxInterval = 0;
 	
 	var minStart = Number.MAX_VALUE;
-	var maxEnd = now;
+	var maxEnd = 0;
 	
 	// Cannot trust the task order.
 	for (var index = 0; index < tasks.length; ++index) {
 		var task = tasks[index];
-		
+			
 		// Skip the bad tasks.
-		if (task.start && task.end && task.start > task.end) {
+		if (!task.start || (task.start && task.end && task.start > task.end)) {
 			continue;
 		}
 
-		if (task.start && task.start < minStart) {
+		if (task.start < minStart) {
 			minStart = task.start;
 		}
 		
@@ -24,21 +24,69 @@ function populateTasks(tasks, $container) {
 			maxEnd = task.end;
 		}
 		
-		if (task.start && task.end &&
-				task.end - task.start > maxInterval) {
+		if (!task.end && now > maxEnd) {
+			maxEnd = now;
+		}
+		
+		if (task.end && task.end - task.start > maxInterval) {
 			maxInterval = task.end - task.start;
 		}
 		
-		if (task.start && !(task.end) && task.start <= now &&
-				now - task.start > maxInterval) {
+		if (!(task.end) && now - task.start > maxInterval) {
 			maxInterval = now - task.start;
 		}
 	}
-	
+
 	var diff = maxEnd - minStart;
 	
 	// Normalize the sizes for circles of radius at most 50 (magic).
-	var maxSize = Math.min(100, );
+	var maxSize = Math.min(100, maxInterval * 800 / diff);
+
+	// Create the circles
+	$container.empty();
+	
+	for (var index = 0; index < tasks.length; ++index) {
+		var task = tasks[index];
+	
+		// Skip the bad tasks.
+		if (!(task.start) || (task.start && task.end && task.start > task.end)) {
+			continue;
+		}
+
+		var diameter; 
+		var opacity;
+		var progress;
+		
+		if (task.end) {
+			var interval = task.end - task.start;
+			diameter = Math.floor(interval * maxSize / maxInterval);
+			opacity = 0.3;
+			progress = false;
+		} else {
+			var interval = now - task.start;
+			diameter = Math.floor(interval * maxSize / maxInterval);
+			opacity = 0.9;
+			progress = true;
+		}
+		
+		diameter = Math.max(10, diameter);
+		
+		var positionX = Math.floor((task.start - minStart) * maxSize / maxInterval);
+		var positionY = 50 - diameter / 2;
+		
+		$taskContainer = $('<div></div>')
+			.css('width', diameter + 'px')
+			.css('height', diameter + 'px')
+			.css('left', positionX + 'px')
+			.css('top', positionY + 'px')
+			.css('font-size', (diameter * 0.9) + 'px')
+			.css('opacity', opacity)
+			.appendTo($container);
+			
+		if (progress) {
+			$taskContainer.addClass('progress');
+		}
+	}
 }
 
 function computeTotalHours(tasks) {
