@@ -87,12 +87,6 @@ exports.updateById = function(request, response) {
         return;
     }
 	
-	// Tasks is mandatory.
-    if (!(project.tasks)) {
-        response.send(400, "Missing project tasks.");
-        return;
-    }
-
     // ID is a 24-hex string.
     if (!(id.match(idRegex))) {
         response.send(400, "Invalid project identifier.");
@@ -101,8 +95,7 @@ exports.updateById = function(request, response) {
 
     var projectObject = {
         'name': project.name,
-        'description': project.description,
-        'tasks': project.tasks
+        'description': project.description
     };
     model.updateById(request, response, id, projectObject, function(request, response, project) {
         response.format({

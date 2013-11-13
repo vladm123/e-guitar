@@ -48,9 +48,9 @@ body > div > div > h2
 	padding: 0
 	text-shadow 0px 0px #eee
 	white-space: nowrap
-	
-body > div > div > p
-	color: #ddd
+
+body > div.new > div > p
+	color: #666
 	float: left
 	font-family: Lato, Helvetica, Arial, sans-serif
 	font-size: 25px
@@ -60,6 +60,83 @@ body > div > div > p
 	text-shadow 0px 0px #eee
 	white-space: nowrap
 	
+body > div.new > div > form > p > input.name
+	border: 0
+	clear: both
+	color: #333
+	float: left
+	font-family: Lato, Helvetica, Arial, sans-serif
+	font-size: 50px
+	font-weight: 300
+	margin: 0
+	padding: 0
+	text-shadow 0px 0px #eee
+	width:800px
+
+body > div.new > div > form > p > input.description
+	border: 0
+	color: #666
+	float: left
+	font-family: Lato, Helvetica, Arial, sans-serif
+	font-size: 25px
+	font-weight: 300
+	margin: 0
+	padding: 0
+	text-shadow 0px 0px #eee
+	width:800px
+
+body > div.new > div > form > p > input.add
+body > div.new > div > form > p > input.edit
+body > div.new > div > form > p > input.remove
+body > div.new > div > form > p > input.close
+	background-color: #fff
+	border: 0
+	cursor: pointer
+	float: right
+	font-family: Lato, Helvetica, Arial, sans-serif
+	font-size: 25px
+	font-weight: 400
+	margin: 0
+	margin-bottom:-15px
+	margin-right:-15px
+	padding: 5px
+	position: relative
+	text-shadow 0px 0px #eee
+	transition: all 1s
+	-webkit-transition: all 1s
+	white-space: nowrap
+	display:none
+	
+body > div.new > div > form > p > input.add:hover
+body > div.new > div > form > p > input.edit:hover
+body > div.new > div > form > p > input.remove:hover
+body > div.new > div > form > p > input.close:hover
+	color: #fff
+
+body > div.new > div > form > p > input.add
+	color: #3c0
+	
+body > div.new > div > form > p > input.edit
+	color: #666
+
+body > div.new > div > form > p > input.remove
+	color: #f30
+
+body > div.new > div > form > p > input.close
+	color: #999
+
+body > div.new > div > form > p > input.add:hover
+	background-color: #3c0
+
+body > div.new > div > form > p > input.edit:hover
+	background-color: #666
+
+body > div.new > div > form > p > input.remove:hover
+	background-color: #f30
+
+body > div.new > div > form > p > input.close:hover
+	background-color: #999
+
 body > div > div > aside
 	background-color: #333
 	color: #fff
@@ -81,16 +158,39 @@ body > div > div > div
 	background-image: url('strings.png')
 	
 body > div > div > div > div
-	background-color: #f30
-	border: 4px solid #f30
 	border-bottom-left-radius: 100%
 	border-bottom-right-radius: 100%
 	border-top-left-radius: 100%
 	border-top-right-radius: 100%
 	box-shadow 0 0 5px #eee
 	color: #fff
+	cursor: pointer
+	font-weight: bold
 	overflow: hidden
 	position: absolute
+	transition: all 1s
+	-webkit-transition: all 1s
+	
+body > div > div > div > div.done
+	background-color: #3c0
+	border: 4px solid #3c0
+	text-shadow 0px 0px #2b0
 	
 body > div > div > div > div.progress
-	background-color: #fff
+	background-color: transparent
+	border: 4px solid #f90
+	text-shadow 0px 0px #e80
+	
+body > div > div > div > div.progress:hover
+	background-color: #3c0
+	border: 4px solid #3c0
+	text-shadow 0px 0px #2b0
+
+body > div > div > div > div.done:hover
+	background-color: #3c0
+
+body > div > div > div > div.progress:hover:before
+	content: '✓'
+
+body > div > div > div > div.done:hover:before
+	content: 'i'

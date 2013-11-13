@@ -125,7 +125,7 @@ exports.updateById = function(request, response, id, project, next) {
         database.collection(collectionName)
             .findAndModify({'_id': new bson(id)},
 				{'sort': ['name', 'asc']},
-                project,
+                {$set: {name: project.name}, $set: {description: project.description}},
                 {'new': true},
                 function(error, project) {
                     if (error) {

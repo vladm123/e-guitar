@@ -13,4 +13,17 @@ html
 		title e-guitar | easy task management
 	body
 		h1 e-guitar
-		div
+		div.all
+		div.new
+			div
+				aside new project
+				form.project
+					p
+						input.name(placeholder='name',name='name')
+					p
+						input.description(placeholder='description',name='description')
+					p
+						input.add(type='button', value='add')
+						input.edit(type='button', value='edit')
+						input.remove(type='button', value='remove')
+						input.close(type='button', value='X')

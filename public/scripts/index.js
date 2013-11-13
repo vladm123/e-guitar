@@ -40,7 +40,7 @@ function populateTasks(tasks, $container) {
 	var diff = maxEnd - minStart;
 	
 	// Normalize the sizes for circles of radius at most 50 (magic).
-	var maxSize = Math.min(100, maxInterval * 800 / diff);
+	var maxSize = Math.min(100, maxInterval * 780 / diff);
 
 	// Create the circles
 	$container.empty();
@@ -72,7 +72,7 @@ function populateTasks(tasks, $container) {
 		diameter = Math.max(10, diameter);
 		
 		var positionX = Math.floor((task.start - minStart) * maxSize / maxInterval);
-		var positionY = 50 - diameter / 2;
+		var positionY = Math.floor(50 - diameter / 2);
 		
 		$taskContainer = $('<div></div>')
 			.css('width', diameter + 'px')
@@ -83,8 +83,14 @@ function populateTasks(tasks, $container) {
 			.css('opacity', opacity)
 			.appendTo($container);
 			
+		$taskContainer.on('click', function() {
+			alert(1);
+		});
+			
 		if (progress) {
 			$taskContainer.addClass('progress');
+		} else {
+			$taskContainer.addClass('done');
 		}
 	}
 }
@@ -106,11 +112,11 @@ function computeTotalHours(tasks) {
 	var minutes = 60 * seconds;
 	var hours = 60 * minutes;
 	return Math.floor(sum / hours) + 'h ' +
-		(sum % hours / minutes) + '\'';
+		Math.floor(sum % hours / minutes) + '\'';
 }
 
 function populateProject(index, project) {
-	$projectContainer = $('<div></div>').appendTo('body > div');
+	$projectContainer = $('<div></div>').appendTo('body > div.all');
 
 	// Populating the project information.
 	$projectHours = $('<aside></aside>')
@@ -135,11 +141,27 @@ function populateProject(index, project) {
 
 function populateProjects() {
 	$.get('http://localhost:3000/projects', function(data) {
-		$('body > div').empty();
+		$('body > div.all').empty();
 		$.each(data, populateProject);
 	});
 }
 
+function populateNewProject() {
+	$newProjectDiv = $('body > div.new');
+	$newProjectDiv.find('input.name').val('');
+	$newProjectDiv.find('input.name').val('');
+
+	$newProjectDiv.find('input.add').show();
+	$newProjectDiv.find('input.edit').hide();
+	$newProjectDiv.find('input.remove').hide();
+	$newProjectDiv.find('input.close').hide();
+}
+
+function addProject(name, description) {
+	
+}
+
 $(document).ready(function() {
 	populateProjects();
+	populateNewProject();
 });
