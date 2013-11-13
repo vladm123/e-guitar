@@ -65,12 +65,13 @@ exports.insert = function(request, response) {
         // Add an empty array of tasks.
         'tasks': []
     };
-    model.insert(request, response, projectObject, function(request, response, project) {
-        response.format({
-            json: function() {
-                response.json(project);
-            }
-        });
+    model.insert(request, response, projectObject, 
+		function(request, response, project) {
+			response.format({
+				json: function() {
+					response.json(project);
+				}
+			});
     });
 };
 
@@ -99,12 +100,13 @@ exports.updateById = function(request, response) {
         'name': project.name,
         'description': project.description
     };
-    model.updateById(request, response, id, projectObject, function(request, response, project) {
-        response.format({
-            json: function() {
-                response.json(project);
-            }
-        });
+    model.updateById(request, response, id, projectObject, 
+		function(request, response, project) {
+			response.format({
+				json: function() {
+					response.json(project);
+				}
+			});
     });
 };
 
