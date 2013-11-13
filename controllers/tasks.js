@@ -26,20 +26,37 @@ exports.insertByTaskProjectId = function(request, response) {
         return;
     }
 	
+	// Start matches a long number, if exists.
+	if ((task.start) && !(task.start.toString().match(lgRegex))) {
+        response.send(400, "Invalid task start.");
+        return;
+	}
+	
+	// Add the start time stamp to the task object, if not exists.
+	if (!(task.start)) {
+        task.start = new Date().getTime();
+	}
+	
+	// End matches a long number, if exists.
+	if ((task.end) && !(task.end.toString().match(lgRegex))) {
+        response.send(400, "Invalid task start.");
+        return;
+	}
+
     var taskObject = {
         'name': task.name,
         'description': task.description,
-
-        // Add the start time stamp to the task object.
-        'start': new Date().getTime(),
+        'start': task.start,
+		'end': task.end
     };
-    model.insertByTaskProjectId(request, response, taskObject, projectid, function(request, response, project) {
-        response.format({
-            json: function() {
-                response.json(project);
-            }
-        });
-    });
+    model.insertByTaskProjectId(request, response, taskObject, projectid, 
+		function(request, response, project) {
+			response.format({
+				json: function() {
+					response.json(project);
+				}
+			});
+		});
 };
 
 /*
@@ -80,6 +97,11 @@ exports.updateByTaskProjectId = function(request, response) {
         response.send(400, "Invalid task end.");
         return;
 	}
+	
+	if ((task.end) && (task.start > task.end)) {
+        response.send(400, "Overflown task end.");
+        return;
+	}
 
     var taskObject = {
         'name': task.name,
@@ -87,13 +109,14 @@ exports.updateByTaskProjectId = function(request, response) {
         'start': task.start,
         'end': task.end
     };
-    model.updateByTaskProjectId(request, response, taskObject, projectid, function(request, response, project) {
-        response.format({
-            json: function() {
-                response.json(project);
-            }
-        });
-    });
+    model.updateByTaskProjectId(request, response, taskObject, projectid,
+		function(request, response, project) {
+			response.format({
+				json: function() {
+					response.json(project);
+				}
+			});
+		});
 };
 
 /*
@@ -126,11 +149,12 @@ exports.deleteByTaskProjectId = function(request, response) {
     var taskObject = {
         'start' : task.start
     };
-    model.deleteByTaskProjectId(request, response, taskObject, projectid, function(request, response, project) {
-        response.format({
-            json: function() {
-                response.json(project);
-            }
-        });
-    });
+    model.deleteByTaskProjectId(request, response, taskObject, projectid,
+		function(request, response, project) {
+			response.format({
+				json: function() {
+					response.json(project);
+				}
+			});
+		});
 };

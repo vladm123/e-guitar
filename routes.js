@@ -6,7 +6,7 @@ var taskControllers = require(path.join(config.data.controller.path, 'tasks'));
 
 exports.setup = function(app) {
 	// General routes.
-	app.get('/', function(req, res) { res.send("OK"); })
+	app.get('/', function(req, res) { res.render('index'); })
 
 	// Routes for projects.
 	app.get('/projects', projectControllers.selectAll);

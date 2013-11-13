@@ -6,6 +6,11 @@ var bson = mongo.BSONPure.ObjectID;
 var collectionName = config.data.database.mongodb.collection;
 var connectionString = config.data.database.mongodb.connectionString;
 
+exports.init = function(collection, connection) {
+	collectionName = collection;
+	connectionString = connection;
+};
+
 /*
  * Selects all projects.
  * @param request The HTTP request object.
