@@ -5,9 +5,6 @@ var projectControllers = require(path.join(config.data.controller.path, 'project
 var taskControllers = require(path.join(config.data.controller.path, 'tasks'));
 
 exports.setup = function(app) {
-	// General routes.
-	app.get('/', function(req, res) { res.render('index'); })
-
 	// Routes for projects.
 	app.get('/projects', projectControllers.selectAll);
 	app.get('/projects/:id', projectControllers.selectById);
@@ -19,4 +16,8 @@ exports.setup = function(app) {
 	app.post('/projects/:projectid/tasks/insert', taskControllers.insertByTaskProjectId);
 	app.post('/projects/:projectid/tasks/update', taskControllers.updateByTaskProjectId);
 	app.post('/projects/:projectid/tasks/delete', taskControllers.deleteByTaskProjectId);
+
+	// General routes.
+	app.get('/', function(req, res) { res.render('projects'); });
+	app.get('/:id', function(req, res) { res.render('project', {id: req.params.id}); });	
 };
