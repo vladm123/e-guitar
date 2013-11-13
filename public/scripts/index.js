@@ -40,7 +40,7 @@ function populateTasks(tasks, $container) {
 	var diff = maxEnd - minStart;
 	
 	// Normalize the sizes for circles of radius at most 50 (magic).
-	var maxSize = Math.min(100, maxInterval * 780 / diff);
+	var maxSize = Math.min(100, maxInterval * 700 / diff);
 
 	// Create the circles
 	$container.empty();
@@ -116,7 +116,9 @@ function computeTotalHours(tasks) {
 }
 
 function populateProject(index, project) {
-	$projectContainer = $('<div></div>').appendTo('body > div.all');
+	$projectContainer = $('<div></div>')
+		.attr('id', project._id)
+		.prependTo('body > div.all');
 
 	// Populating the project information.
 	$projectHours = $('<aside></aside>')
@@ -124,6 +126,14 @@ function populateProject(index, project) {
 		.appendTo($projectContainer);
 	$projectTitle = $('<h2></h2>').html(project.name)
 		.appendTo($projectContainer);
+	
+	// Handle the click for the project.
+	$projectTitle.on('click', function(event) {
+		id = $(event.target).parent().attr('id');
+		name = $(event.target).parent().find('h2').html();
+		description = $(event.target).parent().find('p').html();
+		populateEditProject(id, name, description);
+	});
 	
 	if (project.description) {
 		$projectDescription = $('<p></p>')
@@ -148,8 +158,9 @@ function populateProjects() {
 
 function populateNewProject() {
 	$newProjectDiv = $('body > div.new');
+	$newProjectDiv.find('input.id').val('');
 	$newProjectDiv.find('input.name').val('');
-	$newProjectDiv.find('input.name').val('');
+	$newProjectDiv.find('input.description').val('');
 
 	$newProjectDiv.find('input.add').show();
 	$newProjectDiv.find('input.edit').hide();
@@ -157,11 +168,73 @@ function populateNewProject() {
 	$newProjectDiv.find('input.close').hide();
 }
 
+function populateEditProject(id, name, description) {
+	$newProjectDiv = $('body > div.new');
+	$newProjectDiv.find('input.id').val(id);
+	$newProjectDiv.find('input.name').val(name);
+	$newProjectDiv.find('input.description').val(description);
+
+	$newProjectDiv.find('input.add').hide();
+	$newProjectDiv.find('input.edit').show();
+	$newProjectDiv.find('input.remove').show();
+	$newProjectDiv.find('input.close').show();
+}
+
+function depopulateProject(id) {
+	$('body > div.all > div#' + id).remove();
+}
+
 function addProject(name, description) {
-	
+	$.post('http://localhost:3000/projects/insert', {name: name, description: description}, function(project) {
+		populateProject(0, project);
+		populateNewProject();
+	});
+}
+
+function editProject(id, name, description) {
+	$.post('http://localhost:3000/projects/' + id + '/update', {name: name, description: description}, function(project) {
+		depopulateProject(id);
+		populateProject(0, project);
+		populateNewProject();
+	});
+}
+
+function removeProject(id) {
+	$.post('http://localhost:3000/projects/' + id + '/delete', {}, function(project) {
+		depopulateProject(id);
+		populateNewProject();
+	});
 }
 
 $(document).ready(function() {
 	populateProjects();
 	populateNewProject();
+	
+	$('body > div.new form.project input.add').on('click', function(event) {
+		name = $('body > div.new form.project input.name').val();
+		description = $('body > div.new form.project input.description').val();
+		addProject(name, description);
+	});
+	
+	$('body > div.new form.project input.edit').on('click', function(event) {
+		id = $('body > div.new form.project input.id').val();
+		name = $('body > div.new form.project input.name').val();
+		description = $('body > div.new form.project input.description').val();
+		editProject(id, name, description);
+	});
+
+	$('body > div.new form.project input.remove').on('click', function(event) {
+	
+		// Do you really want to remove the project?
+		if (!confirm("This project will be deleted. Click OK to continue and Cancel to keep it.")) {
+			return;
+		}
+		
+		id = $('body > div.new form.project input.id').val();
+		removeProject(id);
+	});
+
+	$('body > div.new form.project input.close').on('click', function(event) {
+		populateNewProject();
+	});
 });
