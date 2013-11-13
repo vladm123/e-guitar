@@ -172,7 +172,8 @@ function populateProject(index, project) {
 		.html('+')
 		.appendTo($projectContainer);
 			
-		$newTaskContainer.on('click', function() {
+		$newTaskContainer.on('click', function(event) {
+			$(event.target).hide();
 			addTask(project._id);
 		});
 }
@@ -267,7 +268,7 @@ $(document).ready(function() {
 		if (!confirm("This project will be deleted. Click OK to continue and Cancel to keep it.")) {
 			return;
 		}
-		
+
 		id = $('body > div.project form.project input.id').val();
 		removeProject(id);
 	});
