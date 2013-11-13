@@ -1,4 +1,4 @@
-function populateTasks(tasks, $container) {
+function populateTasks(id, tasks, $container) {
 	var now = new Date().getTime();
 
 	var minInterval = Number.MAX_VALUE;
@@ -10,7 +10,7 @@ function populateTasks(tasks, $container) {
 	// Cannot trust the task order.
 	for (var index = 0; index < tasks.length; ++index) {
 		var task = tasks[index];
-			
+
 		// Skip the bad tasks.
 		if (!task.start || (task.start && task.end && task.start > task.end)) {
 			continue;
@@ -74,7 +74,9 @@ function populateTasks(tasks, $container) {
 		var positionX = Math.floor((task.start - minStart) * maxSize / maxInterval);
 		var positionY = Math.floor(50 - diameter / 2);
 		
-		$taskContainer = $('<div></div>')
+		var $taskContainer = $('<div></div>')
+			.attr('data-start', task.start)
+			.attr('data-end', task.end)
 			.css('width', diameter + 'px')
 			.css('height', diameter + 'px')
 			.css('left', positionX + 'px')
@@ -83,14 +85,21 @@ function populateTasks(tasks, $container) {
 			.css('opacity', opacity)
 			.appendTo($container);
 			
-		$taskContainer.on('click', function() {
-			alert(1);
-		});
-			
 		if (progress) {
-			$taskContainer.addClass('progress');
+			$taskContainer
+				.addClass('progress')
+				.attr('title', 'Click to finish this task')
+				.css('cursor', 'pointer');
+			$taskContainer.on('click', function() {
+				var start = parseInt($taskContainer.attr('data-start'));
+				var end = $taskContainer.attr('data-end') ?
+					parseInt($taskContainer.attr('data-end')) : new Date().getTime();
+				updateTask(id, start, end);
+			});
 		} else {
-			$taskContainer.addClass('done');
+			$taskContainer
+				.addClass('done')
+				.attr('title', 'This task is finished');
 		}
 	}
 }
@@ -118,13 +127,15 @@ function computeTotalHours(tasks) {
 function populateProject(index, project) {
 	$projectContainer = $('<div></div>')
 		.attr('id', project._id)
-		.prependTo('body > div.all');
+		.prependTo('body > div.all')
+		.show();
 
 	// Populating the project information.
 	$projectHours = $('<aside></aside>')
 		.html(computeTotalHours(project.tasks))
 		.appendTo($projectContainer);
 	$projectTitle = $('<h2></h2>').html(project.name)
+		.attr('title', 'Click to see project details')
 		.appendTo($projectContainer);
 	
 	// Handle the click for the project.
@@ -144,9 +155,20 @@ function populateProject(index, project) {
 	if (project.tasks) {
 		// Adding the tasks container
 		$tasksContainer = $('<div></div>')
+			.addClass('tasks')
 			.appendTo($projectContainer);
-		populateTasks(project.tasks, $tasksContainer);
+		populateTasks(project._id, project.tasks, $tasksContainer);
 	}
+	
+	var $newTaskContainer = $('<div></div>')
+		.attr('title', 'Click to add a new task')
+		.addClass('task')
+		.html('+')
+		.appendTo($projectContainer);
+			
+		$newTaskContainer.on('click', function() {
+			addTask(project._id);
+		});
 }
 
 function populateProjects() {
@@ -157,7 +179,7 @@ function populateProjects() {
 }
 
 function populateNewProject() {
-	$newProjectDiv = $('body > div.new');
+	$newProjectDiv = $('body > div.project');
 	$newProjectDiv.find('input.id').val('');
 	$newProjectDiv.find('input.name').val('');
 	$newProjectDiv.find('input.description').val('');
@@ -169,7 +191,7 @@ function populateNewProject() {
 }
 
 function populateEditProject(id, name, description) {
-	$newProjectDiv = $('body > div.new');
+	$newProjectDiv = $('body > div.project');
 	$newProjectDiv.find('input.id').val(id);
 	$newProjectDiv.find('input.name').val(name);
 	$newProjectDiv.find('input.description').val(description);
@@ -180,8 +202,18 @@ function populateEditProject(id, name, description) {
 	$newProjectDiv.find('input.close').show();
 }
 
-function depopulateProject(id) {
-	$('body > div.all > div#' + id).remove();
+function addTask(id) {
+	$.post('http://localhost:3000/projects/' + id + '/tasks/insert', {}, function(project) {
+		$('body > div.all > div#' + id).remove();
+		populateProject(0, project);
+	});
+}
+
+function updateTask(id, start, end) {
+	$.post('http://localhost:3000/projects/' + id + '/tasks/update', {start: start, end: end}, function(project) {
+		$('body > div.all > div#' + id).remove();
+		populateProject(0, project);
+	});
 }
 
 function addProject(name, description) {
@@ -193,7 +225,7 @@ function addProject(name, description) {
 
 function editProject(id, name, description) {
 	$.post('http://localhost:3000/projects/' + id + '/update', {name: name, description: description}, function(project) {
-		depopulateProject(id);
+		$('body > div.all > div#' + id).remove();
 		populateProject(0, project);
 		populateNewProject();
 	});
@@ -201,7 +233,7 @@ function editProject(id, name, description) {
 
 function removeProject(id) {
 	$.post('http://localhost:3000/projects/' + id + '/delete', {}, function(project) {
-		depopulateProject(id);
+		$('body > div.all > div#' + id).remove();
 		populateNewProject();
 	});
 }
@@ -210,31 +242,31 @@ $(document).ready(function() {
 	populateProjects();
 	populateNewProject();
 	
-	$('body > div.new form.project input.add').on('click', function(event) {
-		name = $('body > div.new form.project input.name').val();
-		description = $('body > div.new form.project input.description').val();
+	$('body > div.project form.project input.add').on('click', function(event) {
+		name = $('body > div.project form.project input.name').val();
+		description = $('body > div.project form.project input.description').val();
 		addProject(name, description);
 	});
 	
-	$('body > div.new form.project input.edit').on('click', function(event) {
-		id = $('body > div.new form.project input.id').val();
-		name = $('body > div.new form.project input.name').val();
-		description = $('body > div.new form.project input.description').val();
+	$('body > div.project form.project input.edit').on('click', function(event) {
+		id = $('body > div.project form.project input.id').val();
+		name = $('body > div.project form.project input.name').val();
+		description = $('body > div.project form.project input.description').val();
 		editProject(id, name, description);
 	});
 
-	$('body > div.new form.project input.remove').on('click', function(event) {
+	$('body > div.project form.project input.remove').on('click', function(event) {
 	
 		// Do you really want to remove the project?
 		if (!confirm("This project will be deleted. Click OK to continue and Cancel to keep it.")) {
 			return;
 		}
 		
-		id = $('body > div.new form.project input.id').val();
+		id = $('body > div.project form.project input.id').val();
 		removeProject(id);
 	});
 
-	$('body > div.new form.project input.close').on('click', function(event) {
+	$('body > div.project form.project input.close').on('click', function(event) {
 		populateNewProject();
 	});
 });

@@ -45,6 +45,9 @@ body > div > div
 	overflow-x: hidden
 	padding: 15px
 	width: 800px
+
+body > div.all > div
+	display: none
 	
 body > div > div > h2
 	clear: both
@@ -71,7 +74,7 @@ body > div > div > p
 	text-shadow 0px 0px #eee
 	white-space: nowrap
 	
-body > div.new > div > form > p > input.name
+body > div.project > div > form > p > input.name
 	border: 0
 	clear: both
 	color: #333
@@ -84,7 +87,7 @@ body > div.new > div > form > p > input.name
 	text-shadow 0px 0px #eee
 	width:800px
 
-body > div.new > div > form > p > input.description
+body > div.project > div > form > p > input.description
 	border: 0
 	color: #666
 	float: left
@@ -96,10 +99,10 @@ body > div.new > div > form > p > input.description
 	text-shadow 0px 0px #eee
 	width:800px
 
-body > div.new > div > form > p > input.add
-body > div.new > div > form > p > input.edit
-body > div.new > div > form > p > input.remove
-body > div.new > div > form > p > input.close
+body > div.project > div > form > p > input.add
+body > div.project > div > form > p > input.edit
+body > div.project > div > form > p > input.remove
+body > div.project > div > form > p > input.close
 	background-color: #fff
 	border: 0
 	cursor: pointer
@@ -114,41 +117,45 @@ body > div.new > div > form > p > input.close
 	padding: 5px
 	position: relative
 	text-shadow 0px 0px #eee
-	transition: all 1s
-	-webkit-transition: all 1s
+	transition: all 0.1s
+	-webkit-transition: all 0.1s
 	white-space: nowrap
 	display:none
 	
-body > div.new > div > form > p > input.add:hover
-body > div.new > div > form > p > input.edit:hover
-body > div.new > div > form > p > input.remove:hover
-body > div.new > div > form > p > input.close:hover
+body > div.project > div > form > p > input.add:hover
+body > div.project > div > form > p > input.edit:hover
+body > div.project > div > form > p > input.remove:hover
+body > div.project > div > form > p > input.close:hover
 	color: #fff
 
-body > div.new > div > form > p > input.add
+body > div.project > div > form > p > input.add
 	color: #3c0
 	
-body > div.new > div > form > p > input.edit
+body > div.project > div > form > p > input.edit
 	color: #666
 
-body > div.new > div > form > p > input.remove
+body > div.project > div > form > p > input.remove
 	color: #f30
 
-body > div.new > div > form > p > input.close
+body > div.project > div > form > p > input.close
 	color: #999
 
-body > div.new > div > form > p > input.add:hover
+body > div.project > div > form > p > input.add:hover
 	background-color: #3c0
 
-body > div.new > div > form > p > input.edit:hover
+body > div.project > div > form > p > input.edit:hover
 	background-color: #666
 
-body > div.new > div > form > p > input.remove:hover
+body > div.project > div > form > p > input.remove:hover
 	background-color: #f30
 
-body > div.new > div > form > p > input.close:hover
+body > div.project > div > form > p > input.close:hover
 	background-color: #999
+	
+	
 
+	
+	
 body > div > div > aside
 	background-color: #333
 	color: #fff
@@ -163,46 +170,66 @@ body > div > div > aside
 	text-shadow 0px 0px #eee
 	white-space: nowrap
 	
-body > div > div > div
+body > div > div > div.task
+	background-color: transparent
+	border-bottom-left-radius: 100%
+	border-bottom-right-radius: 100%
+	border-top-left-radius: 100%
+	border-top-right-radius: 100%
+	color: #3c0
+	cursor: pointer
+	font-family: Lato, Helvetica, Arial, sans-serif
+	font-size: 40px
+	font-weight: 400
+	height: 50px
+	margin-left:750px
+	margin-top:-70px
+	position: absolute
+	transition: all 0.1s
+	-webkit-transition: all 0.1s
+	width: 50px
+	
+body > div > div > div.task:hover
+	background-color: #3c0
+	color: #fff
+	
+body > div > div > div.tasks
 	clear:both
 	height: 100px
 	position: relative
 	background-image: url('strings.png')
 	
-body > div > div > div > div
+body > div > div > div.tasks > div
 	border-bottom-left-radius: 100%
 	border-bottom-right-radius: 100%
 	border-top-left-radius: 100%
 	border-top-right-radius: 100%
 	box-shadow 0 0 5px #eee
 	color: #fff
-	cursor: pointer
 	font-weight: bold
 	overflow: hidden
 	position: absolute
-	transition: all 1s
-	-webkit-transition: all 1s
+	transition: all 0.1s
+	-webkit-transition: all 0.1s
 	
-body > div > div > div > div.done
+body > div > div > div.tasks > div.done
 	background-color: #3c0
 	border: 4px solid #3c0
 	text-shadow 0px 0px #2b0
 	
-body > div > div > div > div.progress
+body > div > div > div.tasks > div.progress
 	background-color: transparent
 	border: 4px solid #f90
+	cursor: pointer
 	text-shadow 0px 0px #e80
 	
-body > div > div > div > div.progress:hover
+body > div > div > div.tasks > div.progress:hover
 	background-color: #3c0
 	border: 4px solid #3c0
 	text-shadow 0px 0px #2b0
 
-body > div > div > div > div.done:hover
+body > div > div > div.tasks > div.done:hover
 	background-color: #3c0
 
-body > div > div > div > div.progress:hover:before
+body > div > div > div.tasks > div:hover:before
 	content: '✓'
-
-body > div > div > div > div.done:hover:before
-	content: 'i'

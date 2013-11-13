@@ -20,12 +20,6 @@ exports.insertByTaskProjectId = function(request, response) {
         return;
     }
     
-    // Name is mandatory.
-    if (!(task.name)) {
-        response.send(400, "Missing task name.");
-        return;
-    }
-	
 	// Start matches a long number, if exists.
 	if ((task.start) && !(task.start.toString().match(lgRegex))) {
         response.send(400, "Invalid task start.");
@@ -34,7 +28,7 @@ exports.insertByTaskProjectId = function(request, response) {
 	
 	// Add the start time stamp to the task object, if not exists.
 	if (!(task.start)) {
-        task.start = new Date().getTime();
+        task.start = new Date().getTime().toString();
 	}
 	
 	// End matches a long number, if exists.
@@ -44,8 +38,6 @@ exports.insertByTaskProjectId = function(request, response) {
 	}
 
     var taskObject = {
-        'name': task.name,
-        'description': task.description,
         'start': task.start,
 		'end': task.end
     };
@@ -74,12 +66,6 @@ exports.updateByTaskProjectId = function(request, response) {
         return;
     }
 
-    // Name is mandatory.
-    if (!(task.name)) {
-        response.send(400, "Missing task name.");
-        return;
-    }
-
     // Start is mandatory.
     if (!(task.start)) {
         response.send(400, "Missing task start.");
@@ -104,8 +90,6 @@ exports.updateByTaskProjectId = function(request, response) {
 	}
 
     var taskObject = {
-        'name': task.name,
-        'description': task.description,
         'start': task.start,
         'end': task.end
     };

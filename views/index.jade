@@ -14,19 +14,19 @@ html
 	body
 		h1 e-guitar
 		hr
-		div.new
+		div.project
 			div
 				aside project
 				form.project
 					input.id(type='hidden',name='id')
 					p
-						input.name(placeholder='name',name='name')
+						input.name(placeholder='type the project name', name='name', title='Type the project name')
 					p
-						input.description(placeholder='description',name='description')
+						input.description(placeholder='type the project description',name='description', title='Type the project description')
 					p
-						input.close(type='button', value='x')
-						input.add(type='button', value='add')
-						input.remove(type='button', value='remove')
-						input.edit(type='button', value='change')
+						input.close(type='button', value='x', title='Click to close the project details')
+						input.add(type='button', value='add', title='Click to add this project')
+						input.remove(type='button', value='remove', title='Click to remove this project')
+						input.edit(type='button', value='change', title='Click to change this project')
 		hr
 		div.all
