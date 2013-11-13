@@ -70,8 +70,9 @@ exports.selectById = function(request, response, id, next) {
  * @param request The HTTP request object.
  * @param response The HTTP response object.
  * @param project The project to be inserted; the id will be auto.
+ * @param next The function called to process the result.
  */ 
-exports.insert = function(request, response, project) {
+exports.insert = function(request, response, project, next) {
     client.connect(connectionString, function(error, database) {
         if (error) {
             response.send(500, "Database connection failed.");
@@ -79,15 +80,25 @@ exports.insert = function(request, response, project) {
         }
         
         database.collection(collectionName)
-            .insert(project, {safe: true}, function(error, projects) {
-                if (error) {
-                    response.send(500, "Database insertion failed.");
-                    return;
-                }
-                
-                response.location('/projects/' + projects[0]._id);
-                response.send(201);
-            });
+            .findAndModify(project,
+				{'sort': ['name', 'asc']},
+				project,
+				{'new': true, 'upsert': true},
+				function(error, project) {
+					if (error) {
+						response.send(500, "Database insertion failed.");
+						return;
+					}
+					
+					if (!(project)) {
+						response.send(404, "Project not found.");
+						return;
+					}
+					
+					response.location('/projects/' + project._id);
+					response.statusCode = 201;
+					next(request, response, project);
+				});
     });
 };
 
@@ -97,8 +108,9 @@ exports.insert = function(request, response, project) {
  * @param response The HTTP response object.
  * @param id The identifier for the project to be updated.
  * @param project The project to be updated.
+ * @param next The function called to process the result.
  */ 
-exports.updateById = function(request, response, id, project) {
+exports.updateById = function(request, response, id, project, next) {
     client.connect(connectionString, function(error, database) {
         if (error) {
             response.send(500, "Database connection failed.");
@@ -106,9 +118,10 @@ exports.updateById = function(request, response, id, project) {
         }
         
         database.collection(collectionName)
-            .update({'_id': new bson(id)},
+            .findAndModify({'_id': new bson(id)},
+				{'sort': ['name', 'asc']},
                 project,
-                {safe: true},
+                {'new': true},
                 function(error, project) {
                     if (error) {
                         response.send(500, "Database update failed.");
@@ -120,7 +133,8 @@ exports.updateById = function(request, response, id, project) {
                         return;
                     }
                     
-                    response.send(204);
+					response.statusCode = 200;
+					next(request, response, project);
                 });
     });
 };
@@ -130,8 +144,9 @@ exports.updateById = function(request, response, id, project) {
  * @param request The HTTP request object.
  * @param response The HTTP response object.
  * @param id The identifier for the project to be deleted.
+ * @param next The function called to process the result.
  */ 
-exports.deleteById = function(request, response, id) {
+exports.deleteById = function(request, response, id, next) {
     client.connect(connectionString, function(error, database) {
         if (error) {
             response.send(500, "Database connection failed.");
@@ -139,15 +154,23 @@ exports.deleteById = function(request, response, id) {
         }
         
         database.collection(collectionName)
-            .remove({'_id': new bson(id)},
-                {safe: true},
-                function(error, result) {
+            .findAndModify({'_id': new bson(id)},
+				{'sort': ['name', 'asc']},
+                {},
+                {'remove': true},
+                function(error, project) {
                     if (error) {
                         response.send(500, "Database deletion failed.");
                         return;
                     }
                     
-                    response.send(204);
+                    if (!(project)) {
+                        response.send(404, "Project not found.");
+                        return;
+                    }
+
+					response.statusCode = 200;
+					next(request, response, project);
                 });
     });
 };

@@ -16,7 +16,7 @@ exports.setup = function(app) {
 	app.post('/projects/:id/delete', projectControllers.deleteById);
 
 	// Routes for tasks inside projects.
-	app.post('projects/:projectid/tasks/insert', taskControllers.insertByTaskProjectId);
-	app.post('projects/:projectid/tasks/update', taskControllers.updateByTaskProjectId);
-	app.post('projects/:projectid/tasks/delete', taskControllers.deleteByTaskProjectId);
+	app.post('/projects/:projectid/tasks/insert', taskControllers.insertByTaskProjectId);
+	app.post('/projects/:projectid/tasks/update', taskControllers.updateByTaskProjectId);
+	app.post('/projects/:projectid/tasks/delete', taskControllers.deleteByTaskProjectId);
 };

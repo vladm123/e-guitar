@@ -33,7 +33,13 @@ exports.insertByTaskProjectId = function(request, response) {
         // Add the start time stamp to the task object.
         'start': new Date().getTime(),
     };
-    model.insertByTaskProjectId(request, response, taskObject, projectid);
+    model.insertByTaskProjectId(request, response, taskObject, projectid, function(request, response, project) {
+        response.format({
+            json: function() {
+                response.json(project);
+            }
+        });
+    });
 };
 
 /*
@@ -64,13 +70,13 @@ exports.updateByTaskProjectId = function(request, response) {
     }
 	
 	// Start matches a long number.
-	if (!(task.start.match(lgRegex))) {
+	if (!(task.start.toString().match(lgRegex))) {
         response.send(400, "Invalid task start.");
         return;
 	}
 
 	// End matches a long number, if exists.
-	if ((task.end) && !(task.end.match(lgRegex))) {
+	if ((task.end) && !(task.end.toString().match(lgRegex))) {
         response.send(400, "Invalid task end.");
         return;
 	}
@@ -81,7 +87,13 @@ exports.updateByTaskProjectId = function(request, response) {
         'start': task.start,
         'end': task.end
     };
-    model.updateByTaskProjectId(request, response, taskObject, projectid);
+    model.updateByTaskProjectId(request, response, taskObject, projectid, function(request, response, project) {
+        response.format({
+            json: function() {
+                response.json(project);
+            }
+        });
+    });
 };
 
 /*
@@ -106,7 +118,7 @@ exports.deleteByTaskProjectId = function(request, response) {
     }
 	
 	// Start matches a long number.
-	if (!(task.start.match(lgRegex))) {
+	if (!(task.start.toString().match(lgRegex))) {
         response.send(400, "Invalid task start.");
         return;
 	}
@@ -114,5 +126,11 @@ exports.deleteByTaskProjectId = function(request, response) {
     var taskObject = {
         'start' : task.start
     };
-    model.deleteByTaskProjectId(request, response, taskObject, projectid);
+    model.deleteByTaskProjectId(request, response, taskObject, projectid, function(request, response, project) {
+        response.format({
+            json: function() {
+                response.json(project);
+            }
+        });
+    });
 };

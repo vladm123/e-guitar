@@ -63,7 +63,13 @@ exports.insert = function(request, response) {
         // Add an empty array of tasks.
         'tasks': []
     };
-    model.insert(request, response, projectObject);
+    model.insert(request, response, projectObject, function(request, response, project) {
+        response.format({
+            json: function() {
+                response.json(project);
+            }
+        });
+    });
 };
 
 /*
@@ -98,7 +104,13 @@ exports.updateById = function(request, response) {
         'description': project.description,
         'tasks': project.tasks
     };
-    model.updateById(request, response, id, projectObject);
+    model.updateById(request, response, id, projectObject, function(request, response, project) {
+        response.format({
+            json: function() {
+                response.json(project);
+            }
+        });
+    });
 };
 
 /*
@@ -115,5 +127,11 @@ exports.deleteById = function(request, response) {
         return;
     }
 
-    model.deleteById(request, response, id);
+    model.deleteById(request, response, id, function(request, response, project) {
+        response.format({
+            json: function() {
+                response.json(project);
+            }
+        });
+    });
 };
