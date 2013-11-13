@@ -6,12 +6,13 @@ function populateProject(index, project) {
 
 	// Populating the project information.
 	$projectHours = $('<aside></aside>')
-		.html(computeTotalHours(project.tasks) + ' // ')
+		.html(' » this project took ' + computeTotalHours(project.tasks))
 		.appendTo($projectContainer);
 	$permalink = $('<a></a>')
 		.attr('href', 'http://localhost:3000/' + project._id)
+		.attr('title', 'Click to see this project only')
 		.html('permalink')
-		.appendTo($projectHours);
+		.prependTo($projectHours);
 	$projectTitle = $('<h2></h2>').html(project.name)
 		.attr('title', 'Click to see project details')
 		.appendTo($projectContainer);
