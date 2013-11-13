@@ -1,3 +1,7 @@
+var seconds = 1000;
+var minutes = 60 * seconds;
+var hours = 60 * minutes;
+
 function populateTasks(id, tasks, $container) {
 	var now = new Date().getTime();
 
@@ -88,18 +92,22 @@ function populateTasks(id, tasks, $container) {
 		if (progress) {
 			$taskContainer
 				.addClass('progress')
-				.attr('title', 'Click to finish this task')
+				.attr('title', 'Click to finish this task started at [' +
+					new Date(parseInt(task.start)).toLocaleString() + ']')
 				.css('cursor', 'pointer');
-			$taskContainer.on('click', function() {
-				var start = parseInt($taskContainer.attr('data-start'));
-				var end = $taskContainer.attr('data-end') ?
-					parseInt($taskContainer.attr('data-end')) : new Date().getTime();
+			$taskContainer.on('click', function(event) {
+				var start = $(event.target).attr('data-start');
+				var end = $(event.target).attr('data-end') ?
+					$(event.target).attr('data-end') : new Date().getTime();
 				updateTask(id, start, end);
 			});
 		} else {
 			$taskContainer
 				.addClass('done')
-				.attr('title', 'This task is finished');
+				.attr('title', 'This task started at [' + 
+					new Date(parseInt(task.start)).toLocaleString() +
+					'] and finished at [' +
+					new Date(parseInt(task.end)).toLocaleString() + ']');
 		}
 	}
 }
@@ -117,9 +125,6 @@ function computeTotalHours(tasks) {
 	}
 	
 	// Return the number of hours.
-	var seconds = 1000;
-	var minutes = 60 * seconds;
-	var hours = 60 * minutes;
 	return Math.floor(sum / hours) + 'h ' +
 		Math.floor(sum % hours / minutes) + '\'';
 }
@@ -153,7 +158,8 @@ function populateProject(index, project) {
 	}
 
 	if (project.tasks) {
-		// Adding the tasks container
+
+		// Adding the tasks container.
 		$tasksContainer = $('<div></div>')
 			.addClass('tasks')
 			.appendTo($projectContainer);

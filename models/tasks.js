@@ -64,7 +64,7 @@ exports.updateByTaskProjectId = function(request, response, task, projectid, nex
             response.send(500, "Database connection failed.");
             return;
         }
-        
+		
 		// Remove all tasks with the same start date from within this project.
         database.collection(collectionName)
             .findAndModify({'_id': new bson(projectid)},
