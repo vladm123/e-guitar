@@ -19,7 +19,7 @@ exports.data = {
 		idRegex: /\b[0-9A-F]{24}\b/gi,
 		
 		// The regex for long numbers.
-		lgRegex: /^[1-9][0-9]{0,17}$/
+		lgRegex: /^[1-9][0-9]{0,18}$/
 	},
 	
 	// Server configuration.
