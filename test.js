@@ -5,10 +5,11 @@ var app = require('./app');
 var mongo = require('mongodb');
 var client = mongo.MongoClient;
 
-// Note: most of these functions may be re-factored.
+// Most of these functions may be refactor friendly.
 // The pattern would be to extract the exact parameters for each operation.
 // Example operations: project + add -> pass in different inputs.
 // If significant parts are different, functions can be passed in.
+// Then they can be moved to files around the modules under test.
 
 // To run the tests, the server must be running here
 var test = {
@@ -1257,7 +1258,7 @@ describe('Task edit', function() {
 	});
 
 	// Edit a task
-	it('Edit a task', function(done) {
+	it('Edits a task', function(done) {
 		this.timeout(maximumRuntime);
 		client.connect(connectionString, function(error, database) {
 			if (error) {
@@ -1382,6 +1383,184 @@ describe('Task edit', function() {
 								});
 								
 								finalRequest.write(updatedTask);
+								finalRequest.end();
+							});
+						}).on('error', function(error) {
+							try {
+								true.should.be.false;
+							} catch (error) {
+								done(error);
+							}
+						});
+
+						updateRequest.write(addedTask);
+						updateRequest.end();
+					});
+				}).on('error', function(error) {
+					try {
+						true.should.be.false;
+					} catch (error) {
+						done(error);
+					}
+				});
+			
+			insertRequest.write(initialProject);
+			insertRequest.end();
+		});
+	});
+});
+
+describe('Task delete', function() {
+	before(function(done) {
+		client.connect(connectionString, function(error, database) {
+			if (error) {
+				try {
+					true.should.be.false;
+				} catch (error) {
+					done(error);
+				}
+			}
+			
+			// Remove all projects
+			database.collection(collectionName) 
+				.remove(function(error, removed) {
+					if (error) {
+						try {
+							true.should.be.false;
+						} catch (error) {
+							done(error);
+						}
+					}
+					
+					done();
+				});
+		});
+	});
+
+	// Delete a task
+	it('Deletes a task', function(done) {
+		this.timeout(maximumRuntime);
+		client.connect(connectionString, function(error, database) {
+			if (error) {
+				try {
+					true.should.be.false;
+				} catch (error) {
+					done(error);
+				}
+			}
+			
+			var initialProject = JSON.stringify({'name': 'IP', 'description': 'ID'});
+			var addedTask = JSON.stringify({'start': '12345'});
+			var deletedTask = JSON.stringify({'start': '12345'});
+			
+			var insertRequest = http.request({
+					method: 'POST', 
+					hostname:test.host, 
+					port:test.port, 
+					path:'/projects/insert',
+					headers: {
+						'Content-Type': 'application/json',
+						'Content-Length': initialProject.length
+					}
+				}, 
+				function(insertResult) {
+					try {
+						insertResult.statusCode.should.eql(201);
+					} catch (error) {
+						done(error);
+					}
+
+					var responseParts = [];
+					insertResult.setEncoding('utf8');
+					insertResult.on('data', function(chunk) {
+						responseParts.push(chunk);
+					});
+					insertResult.on('end', function(){
+						var insertInnerResult = JSON.parse(responseParts.join(''));
+
+						var updateRequest = http.request({
+							method: 'POST', 
+							hostname:test.host, 
+							port:test.port, 
+							path:'/projects/' + insertInnerResult._id + '/tasks/insert',
+							headers: {
+								'Content-Type': 'application/json',
+								'Content-Length': addedTask.length
+							}
+						},
+						function(updateResult) {
+							try {
+								updateResult.statusCode.should.eql(201);
+								updateResult.headers['content-type'].should.eql('application/json');
+							} catch (error) {
+								done(error);
+							}
+		  
+							var responseParts = [];
+							updateResult.setEncoding('utf8');
+							updateResult.on('data', function(chunk) {
+								responseParts.push(chunk);
+							});
+							updateResult.on('end', function(){
+								var updateInnerResult = JSON.parse(responseParts.join(''));
+								
+								try {
+									updateInnerResult.name.should.eql('IP');
+									updateInnerResult.description.should.eql('ID');
+									
+									updateInnerResult.tasks.length.should.eql(1);
+									updateInnerResult.tasks[0].start.should.eql('12345');
+									expect(updateInnerResult.tasks[0].end).to.be.undefined;
+								} catch (error) {
+									done(error);
+								}
+									
+								var finalRequest = http.request({
+									method: 'POST', 
+									hostname:test.host, 
+									port:test.port, 
+									path:'/projects/' + updateInnerResult._id + '/tasks/delete',
+									headers: {
+										'Content-Type': 'application/json',
+										'Content-Length': deletedTask.length
+									}
+								},
+								function(finalResult) {
+									try {
+										finalResult.statusCode.should.eql(200);
+										finalResult.headers['content-type'].should.eql('application/json');
+									} catch (error) {
+										done(error);
+									}
+				  
+									var responseParts = [];
+									finalResult.setEncoding('utf8');
+									finalResult.on('data', function(chunk) {
+										responseParts.push(chunk);
+									});
+									finalResult.on('end', function(){
+										var finalInnerResult = JSON.parse(responseParts.join(''));
+										
+										try {
+											finalInnerResult.name.should.eql('IP');
+											finalInnerResult.description.should.eql('ID');
+											
+											finalInnerResult.tasks.should.eql([]);
+											
+											done();
+										} catch (error) {
+											done(error);
+										}
+									});
+								}).on('error', function(error) {
+									try {
+										true.should.be.false;
+									} catch (error) {
+										done(error);
+									}
+								});
+								
+								finalRequest.write(deletedTask);
 								finalRequest.end();
 							});
 						}).on('error', function(error) {
