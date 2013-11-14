@@ -760,3 +760,130 @@ describe('Project update', function() {
 		});
 	});
 });
+
+describe('Project delete', function() {
+	before(function(done) {
+		client.connect(connectionString, function(error, database) {
+			if (error) {
+				try {
+					true.should.be.false;
+				} catch (error) {
+					done(error);
+				}
+			}
+			
+			// Remove all projects
+			database.collection(collectionName) 
+				.remove(function(error, removed) {
+					if (error) {
+						try {
+							true.should.be.false;
+						} catch (error) {
+							done(error);
+						}
+					}
+					
+					done();
+				});
+		});
+	});
+
+	// Delete a project
+	it('Deletes a project', function(done) {
+		this.timeout(maximumRuntime);
+		client.connect(connectionString, function(error, database) {
+			if (error) {
+				try {
+					true.should.be.false;
+				} catch (error) {
+					done(error);
+				}
+			}
+			
+			var initialProject = JSON.stringify({'name': 'IP', 'description': 'ID'});
+			
+			var insertRequest = http.request({
+					method: 'POST', 
+					hostname:test.host, 
+					port:test.port, 
+					path:'/projects/insert',
+					headers: {
+						'Content-Type': 'application/json',
+						'Content-Length': initialProject.length
+					}
+				}, 
+				function(insertResult) {
+					try {
+						insertResult.statusCode.should.eql(201);
+					} catch (error) {
+						done(error);
+					}
+
+					var responseParts = [];
+					insertResult.setEncoding('utf8');
+					insertResult.on('data', function(chunk) {
+						responseParts.push(chunk);
+					});
+					insertResult.on('end', function(){
+						var insertInnerResult = JSON.parse(responseParts.join(''));
+
+						var deleteRequest = http.request({
+							method: 'POST', 
+							hostname:test.host, 
+							port:test.port, 
+							path:'/projects/' + insertInnerResult._id + '/delete',
+							headers: {
+								'Content-Type': 'application/json',
+								'Content-Length': 0
+							}
+						},
+						function(deleteResult) {
+							try {
+								deleteResult.statusCode.should.eql(200);
+								deleteResult.headers['content-type'].should.eql('application/json');
+							} catch (error) {
+								done(error);
+							}
+		  
+							var responseParts = [];
+							deleteResult.setEncoding('utf8');
+							deleteResult.on('data', function(chunk) {
+								responseParts.push(chunk);
+							});
+							deleteResult.on('end', function(){
+								var deleteInnerResult = JSON.parse(responseParts.join(''));
+								
+								try {
+									deleteInnerResult.name.should.eql('IP');
+									deleteInnerResult.description.should.eql('ID');
+									deleteInnerResult.tasks.should.eql([]);
+	
+									done();
+								} catch (error) {
+									done(error);
+								}
+							});
+						}).on('error', function(error) {
+							try {
+								true.should.be.false;
+							} catch (error) {
+								done(error);
+							}
+						});
+
+						deleteRequest.write('');
+						deleteRequest.end();
+					});
+				}).on('error', function(error) {
+					try {
+						true.should.be.false;
+					} catch (error) {
+						done(error);
+					}
+				});
+			
+			insertRequest.write(initialProject);
+			insertRequest.end();
+		});
+	});
+});
