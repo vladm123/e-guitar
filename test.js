@@ -887,3 +887,339 @@ describe('Project delete', function() {
 		});
 	});
 });
+
+describe('Task add', function() {
+	before(function(done) {
+		client.connect(connectionString, function(error, database) {
+			if (error) {
+				try {
+					true.should.be.false;
+				} catch (error) {
+					done(error);
+				}
+			}
+			
+			// Remove all projects
+			database.collection(collectionName) 
+				.remove(function(error, removed) {
+					if (error) {
+						try {
+							true.should.be.false;
+						} catch (error) {
+							done(error);
+						}
+					}
+					
+					done();
+				});
+		});
+	});
+
+	// Add a task
+	it('Adds a task', function(done) {
+		this.timeout(maximumRuntime);
+		client.connect(connectionString, function(error, database) {
+			if (error) {
+				try {
+					true.should.be.false;
+				} catch (error) {
+					done(error);
+				}
+			}
+			
+			var initialProject = JSON.stringify({'name': 'IP', 'description': 'ID'});
+			var addedTask = JSON.stringify({'start': '12345', 'end': '54321'});
+			
+			var insertRequest = http.request({
+					method: 'POST', 
+					hostname:test.host, 
+					port:test.port, 
+					path:'/projects/insert',
+					headers: {
+						'Content-Type': 'application/json',
+						'Content-Length': initialProject.length
+					}
+				}, 
+				function(insertResult) {
+					try {
+						insertResult.statusCode.should.eql(201);
+					} catch (error) {
+						done(error);
+					}
+
+					var responseParts = [];
+					insertResult.setEncoding('utf8');
+					insertResult.on('data', function(chunk) {
+						responseParts.push(chunk);
+					});
+					insertResult.on('end', function(){
+						var insertInnerResult = JSON.parse(responseParts.join(''));
+
+						var updateRequest = http.request({
+							method: 'POST', 
+							hostname:test.host, 
+							port:test.port, 
+							path:'/projects/' + insertInnerResult._id + '/tasks/insert',
+							headers: {
+								'Content-Type': 'application/json',
+								'Content-Length': addedTask.length
+							}
+						},
+						function(updateResult) {
+							try {
+								updateResult.statusCode.should.eql(201);
+								updateResult.headers['content-type'].should.eql('application/json');
+							} catch (error) {
+								done(error);
+							}
+		  
+							var responseParts = [];
+							updateResult.setEncoding('utf8');
+							updateResult.on('data', function(chunk) {
+								responseParts.push(chunk);
+							});
+							updateResult.on('end', function(){
+								var updateInnerResult = JSON.parse(responseParts.join(''));
+								
+								try {
+									updateInnerResult.name.should.eql('IP');
+									updateInnerResult.description.should.eql('ID');
+									
+									updateInnerResult.tasks.length.should.eql(1);
+									updateInnerResult.tasks[0].start.should.eql('12345');
+									updateInnerResult.tasks[0].end.should.eql('54321');
+									
+									done();
+								} catch (error) {
+									done(error);
+								}
+							});
+						}).on('error', function(error) {
+							try {
+								true.should.be.false;
+							} catch (error) {
+								done(error);
+							}
+						});
+
+						updateRequest.write(addedTask);
+						updateRequest.end();
+					});
+				}).on('error', function(error) {
+					try {
+						true.should.be.false;
+					} catch (error) {
+						done(error);
+					}
+				});
+			
+			insertRequest.write(initialProject);
+			insertRequest.end();
+		});
+	});
+	
+	// Add a task without start
+	it('Adds a task without start', function(done) {
+		this.timeout(maximumRuntime);
+		client.connect(connectionString, function(error, database) {
+			if (error) {
+				try {
+					true.should.be.false;
+				} catch (error) {
+					done(error);
+				}
+			}
+			
+			var initialProject = JSON.stringify({'name': 'IP', 'description': 'ID'});
+			var addedTask = JSON.stringify({'end': '54321'});
+			
+			var insertRequest = http.request({
+					method: 'POST', 
+					hostname:test.host, 
+					port:test.port, 
+					path:'/projects/insert',
+					headers: {
+						'Content-Type': 'application/json',
+						'Content-Length': initialProject.length
+					}
+				}, 
+				function(insertResult) {
+					try {
+						insertResult.statusCode.should.eql(201);
+					} catch (error) {
+						done(error);
+					}
+
+					var responseParts = [];
+					insertResult.setEncoding('utf8');
+					insertResult.on('data', function(chunk) {
+						responseParts.push(chunk);
+					});
+					insertResult.on('end', function(){
+						var insertInnerResult = JSON.parse(responseParts.join(''));
+
+						var updateRequest = http.request({
+							method: 'POST', 
+							hostname:test.host, 
+							port:test.port, 
+							path:'/projects/' + insertInnerResult._id + '/tasks/insert',
+							headers: {
+								'Content-Type': 'application/json',
+								'Content-Length': addedTask.length
+							}
+						},
+						function(updateResult) {
+							try {
+								updateResult.statusCode.should.eql(201);
+								updateResult.headers['content-type'].should.eql('application/json');
+							} catch (error) {
+								done(error);
+							}
+		  
+							var responseParts = [];
+							updateResult.setEncoding('utf8');
+							updateResult.on('data', function(chunk) {
+								responseParts.push(chunk);
+							});
+							updateResult.on('end', function(){
+								var updateInnerResult = JSON.parse(responseParts.join(''));
+								
+								try {
+									updateInnerResult.name.should.eql('IP');
+									updateInnerResult.description.should.eql('ID');
+
+									updateInnerResult.tasks.length.should.eql(1);
+									updateInnerResult.tasks[0].start.should.be.approximately(new Date().getTime(), 60000);
+									updateInnerResult.tasks[0].end.should.eql('54321');
+									
+									done();
+								} catch (error) {
+									done(error);
+								}
+							});
+						}).on('error', function(error) {
+							try {
+								true.should.be.false;
+							} catch (error) {
+								done(error);
+							}
+						});
+
+						updateRequest.write(addedTask);
+						updateRequest.end();
+					});
+				}).on('error', function(error) {
+					try {
+						true.should.be.false;
+					} catch (error) {
+						done(error);
+					}
+				});
+			
+			insertRequest.write(initialProject);
+			insertRequest.end();
+		});
+	});
+	
+	// Add a task without any
+	it('Adds a task without any', function(done) {
+		this.timeout(maximumRuntime);
+		client.connect(connectionString, function(error, database) {
+			if (error) {
+				try {
+					true.should.be.false;
+				} catch (error) {
+					done(error);
+				}
+			}
+			
+			var initialProject = JSON.stringify({'name': 'IP', 'description': 'ID'});
+			var addedTask = JSON.stringify({});
+			
+			var insertRequest = http.request({
+					method: 'POST', 
+					hostname:test.host, 
+					port:test.port, 
+					path:'/projects/insert',
+					headers: {
+						'Content-Type': 'application/json',
+						'Content-Length': initialProject.length
+					}
+				}, 
+				function(insertResult) {
+					try {
+						insertResult.statusCode.should.eql(201);
+					} catch (error) {
+						done(error);
+					}
+
+					var responseParts = [];
+					insertResult.setEncoding('utf8');
+					insertResult.on('data', function(chunk) {
+						responseParts.push(chunk);
+					});
+					insertResult.on('end', function(){
+						var insertInnerResult = JSON.parse(responseParts.join(''));
+
+						var updateRequest = http.request({
+							method: 'POST', 
+							hostname:test.host, 
+							port:test.port, 
+							path:'/projects/' + insertInnerResult._id + '/tasks/insert',
+							headers: {
+								'Content-Type': 'application/json',
+								'Content-Length': addedTask.length
+							}
+						},
+						function(updateResult) {
+							try {
+								updateResult.statusCode.should.eql(201);
+								updateResult.headers['content-type'].should.eql('application/json');
+							} catch (error) {
+								done(error);
+							}
+		  
+							var responseParts = [];
+							updateResult.setEncoding('utf8');
+							updateResult.on('data', function(chunk) {
+								responseParts.push(chunk);
+							});
+							updateResult.on('end', function(){
+								var updateInnerResult = JSON.parse(responseParts.join(''));
+								
+								try {
+									updateInnerResult.name.should.eql('IP');
+									updateInnerResult.description.should.eql('ID');
+
+									updateInnerResult.tasks.length.should.eql(1);
+									expect(updateInnerResult.tasks[0].end).to.be.undefined;
+									
+									done();
+								} catch (error) {
+									done(error);
+								}
+							});
+						}).on('error', function(error) {
+							try {
+								true.should.be.false;
+							} catch (error) {
+								done(error);
+							}
+						});
+
+						updateRequest.write(addedTask);
+						updateRequest.end();
+					});
+				}).on('error', function(error) {
+					try {
+						true.should.be.false;
+					} catch (error) {
+						done(error);
+					}
+				});
+			
+			insertRequest.write(initialProject);
+			insertRequest.end();
+		});
+	});
+});
