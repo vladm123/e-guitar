@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset='utf-8' />
+    <meta http-equiv="X-UA-Compatible" content="chrome=1" />
+    <meta name="description" content="e-guitar : e-guitar | freelance progress tracker | application development assignment" />
+
+    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
+
+    <title>e-guitar</title>
+  </head>
+
+  <body>
+
+    <!-- HEADER -->
+    <div id="header_wrap" class="outer">
+        <header class="inner">
+          <a id="forkme_banner" href="https://github.com/vladm123/e-guitar">View on GitHub</a>
+
+          <h1 id="project_title">e-guitar</h1>
+          <h2 id="project_tagline">e-guitar | freelance progress tracker | application development assignment</h2>
+
+            <section id="downloads">
+              <a class="zip_download_link" href="https://github.com/vladm123/e-guitar/zipball/master">Download this project as a .zip file</a>
+              <a class="tar_download_link" href="https://github.com/vladm123/e-guitar/tarball/master">Download this project as a tar.gz file</a>
+            </section>
+        </header>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div id="main_content_wrap" class="outer">
+      <section id="main_content" class="inner">
+        <h1>
+<a name="user-stories" class="anchor" href="#user-stories"><span class="octicon octicon-link"></span></a>User stories</h1>
+
+<ol>
+<li>As a freelancer I want to be able to register the time I spend on my projects, so that I can document time spent for my customers.</li>
+<li>As a freelancer I want to be able to get an overview of my time registrations, so that I know how much I have worked.</li>
+</ol><h1>
+<a name="approach" class="anchor" href="#approach"><span class="octicon octicon-link"></span></a>Approach</h1>
+
+<p>The freelancer is now able to register (start/stop) intervals of time in which he/she worked on a specific project. He/She can add/remove/modify projects. He/She can then share the progress and working hours to the customers via permanent links. The freelancer can get a quantitative overview of his/her time spent for each project. The user interface is simple and effective.</p>
+
+<p><img src="https://raw.github.com/vladm123/e-guitar/master/public/screenshots/overview.png" alt="Overview"></p>
+
+<h1>
+<a name="stack" class="anchor" href="#stack"><span class="octicon octicon-link"></span></a>Stack</h1>
+
+<ul>
+<li>Database: mongo</li>
+<li>Backend: node, express</li>
+<li>Frontend: jquery</li>
+<li>Test: mocha, should</li>
+</ul><h1>
+<a name="website" class="anchor" href="#website"><span class="octicon octicon-link"></span></a>Website</h1>
+
+<p><code>GET /</code>
+Shows information related to all projects, which can be:</p>
+
+<ul>
+<li>added (by selecting the add option from the project manager)</li>
+<li>modified (by clicking on the project title and selecting the change option from the project manager)</li>
+<li>removed (by clicking on the project title and selecting the remove option from the project manager)</li>
+</ul><p><img src="https://raw.github.com/vladm123/e-guitar/master/public/screenshots/edit.png" alt="Edit project"></p>
+
+<p>Each project can contain zero or more tasks, which can be:</p>
+
+<ul>
+<li>start -&gt; work in progress (by clicking the + option from the project guitar string zone, which will add an orange empty circle)</li>
+<li>work in progress -&gt; complete (by clicking the project circle, which will change it to a green full circle)</li>
+</ul><p><img src="https://raw.github.com/vladm123/e-guitar/master/public/screenshots/finish.png" alt="Finish a task"></p>
+
+<p><code>GET /{identifier}</code>
+Shows read-only information related to a specific project.
+This can be easily shared with customers.</p>
+
+<h1>
+<a name="api" class="anchor" href="#api"><span class="octicon octicon-link"></span></a>API</h1>
+
+<h2>
+<a name="projects" class="anchor" href="#projects"><span class="octicon octicon-link"></span></a>Projects</h2>
+
+<h3>
+<a name="select-all" class="anchor" href="#select-all"><span class="octicon octicon-link"></span></a>Select All</h3>
+
+<p><code>GET /projects</code>
+Selects all projects, along with the tasks for each project.
+Returns the following information:</p>
+
+<ul>
+<li>
+<code>200</code>, along with the selected projects in JSON format, if the request was successful.</li>
+</ul><h3>
+<a name="select" class="anchor" href="#select"><span class="octicon octicon-link"></span></a>Select</h3>
+
+<p><code>GET /projects/{identifier}</code>
+Selects the project by identifier.
+The identifier must be a 24-character string of hexadecimals.
+Returns the following information:</p>
+
+<ul>
+<li>
+<code>200</code>, along with the selected project in JSON format, if the request was successful.</li>
+<li>
+<code>400</code>, if the identifier was invalid.</li>
+<li>
+<code>404</code>, if the project was not found.</li>
+</ul><h3>
+<a name="insert" class="anchor" href="#insert"><span class="octicon octicon-link"></span></a>Insert</h3>
+
+<p><code>POST /projects/insert</code>
+<code>{"name": &lt;name&gt;[, "description": &lt;descripion&gt;]}</code>
+Inserts the project specified in the body in JSON format.
+The name must be a none-mpty string.
+Returns the following information:</p>
+
+<ul>
+<li>
+<code>201</code>, along with the project URL in the header location and the inserted project in JSON format, if the request was successful.</li>
+<li>
+<code>400</code>, if the name was not defined or was the empty string.</li>
+<li>
+<code>404</code>, if the project was not found.</li>
+</ul><h3>
+<a name="update" class="anchor" href="#update"><span class="octicon octicon-link"></span></a>Update</h3>
+
+<p><code>POST /projects/{identifier}/update</code>
+<code>{"name": &lt;name&gt;[, "description": &lt;descripion&gt;]}</code>
+Updates the project by identifier specified in the body in JSON format.
+The identifier must be a 24-character string of hexadecimals.
+The name must be a non-empty string.
+Returns the following information:</p>
+
+<ul>
+<li>
+<code>200</code>, along with the updated project in JSON format, if the request was successful.</li>
+<li>
+<code>400</code>, if the identifier was invalid.</li>
+<li>
+<code>400</code>, if the name was not defined or was the empty string.</li>
+<li>
+<code>404</code>, if the project was not found.</li>
+</ul><h3>
+<a name="delete" class="anchor" href="#delete"><span class="octicon octicon-link"></span></a>Delete</h3>
+
+<p><code>POST /projects/{identifier}/delete</code>
+``
+Deletes the project by identifier.
+The identifier must be a 24-character string of hexadecimals.
+Returns the following information:</p>
+
+<ul>
+<li>
+<code>200</code>, along with the deleted project in JSON format, if the request was successful.</li>
+<li>
+<code>400</code>, if the identifier was invalid.</li>
+<li>
+<code>404</code>, if the project was not found.</li>
+</ul><h2>
+<a name="tasks" class="anchor" href="#tasks"><span class="octicon octicon-link"></span></a>Tasks</h2>
+
+<h3>
+<a name="insert-1" class="anchor" href="#insert-1"><span class="octicon octicon-link"></span></a>Insert</h3>
+
+<p><code>POST /projects/{identifier}/tasks/insert</code>
+<code>{["start": &lt;start&gt;[, "end": &lt;end&gt;]]}</code>
+Updates the project by identifier by inserting the task specified in the body in JSON format.
+The identifier must be a 24-character string of hexadecimals.
+The start must be a long number representing the epoch time, if exists.
+The start is populated with the current epoch time, if not exists.
+The end must be a long number representing the epoch time, if exists.
+Returns the following information:</p>
+
+<ul>
+<li>
+<code>201</code>, along with the project URL in the header location and the updated project in JSON format, if the request was successful.</li>
+<li>
+<code>400</code>, if the identifier was invalid.</li>
+<li>
+<code>400</code>, if the start was invalid.</li>
+<li>
+<code>400</code>, if the end was invalid.</li>
+<li>
+<code>404</code>, if the project was not found.</li>
+</ul><h2>
+<a name="update-1" class="anchor" href="#update-1"><span class="octicon octicon-link"></span></a>Update</h2>
+
+<p><code>POST /projects/{identifier}/tasks/update</code>
+<code>{"start": &lt;start&gt;[, "end": &lt;end&gt;]}</code>
+Updates the project by identifier by updating the task specified in the body in JSON format.
+The tasks that have the same start date as the provided start date are updated.
+The identifier must be a 24-character string of hexadecimals.
+The start must be a long number representing the epoch time.
+The end must be a long number representing the epoch time, if exists.
+Returns the following information:</p>
+
+<ul>
+<li>
+<code>200</code>, along with the updated project in JSON format, if the request was successful.</li>
+<li>
+<code>400</code>, if the identifier was invalid.</li>
+<li>
+<code>400</code>, if the start was missing.</li>
+<li>
+<code>400</code>, if the start was invalid.</li>
+<li>
+<code>400</code>, if the end was invalid.</li>
+<li>
+<code>404</code>, if the project was not found.</li>
+</ul><h2>
+<a name="delete-1" class="anchor" href="#delete-1"><span class="octicon octicon-link"></span></a>Delete</h2>
+
+<p><code>POST /projects/{identifier}/tasks/update</code>
+<code>{"start": &lt;start&gt;}</code>
+Updates the project by identifier by deleting the task specified in the body in JSON format.
+The tasks that have the same start date as the provided start date are deleted.
+The identifier must be a 24-character string of hexadecimals.
+The start must be a long number representing the epoch time.
+Returns the following information:</p>
+
+<ul>
+<li>
+<code>200</code>, along with the updated project in JSON format, if the request was successful.</li>
+<li>
+<code>400</code>, if the identifier was invalid.</li>
+<li>
+<code>400</code>, if the start was missing.</li>
+<li>
+<code>400</code>, if the start was invalid.</li>
+<li>
+<code>404</code>, if the project was not found.</li>
+</ul><h1>
+<a name="extensions" class="anchor" href="#extensions"><span class="octicon octicon-link"></span></a>Extensions</h1>
+
+<ul>
+<li>Client code is written in pure jQuery. Some methods might be split and encapsulated.</li>
+<li>Permanent link identifier coincides with the project identifier. This can be changed to a secret string.</li>
+<li>Added extensive automation for project selection. Same pattern can be applied to the others.</li>
+<li>Coupled the model to the mongo. Another layer can be implemented so that database is abstracted out.</li>
+</ul>
+      </section>
+    </div>
+
+    <!-- FOOTER  -->
+    <div id="footer_wrap" class="outer">
+      <footer class="inner">
+        <p class="copyright">e-guitar maintained by <a href="https://github.com/vladm123">vladm123</a></p>
+        <p>Published with <a href="http://pages.github.com">GitHub Pages</a></p>
+      </footer>
+    </div>
+
+    
+
+  </body>
+</html>
