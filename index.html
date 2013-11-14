@@ -38,9 +38,9 @@
 <li>As a freelancer I want to be able to register the time I spend on my projects, so that I can document time spent for my customers.</li>
 <li>As a freelancer I want to be able to get an overview of my time registrations, so that I know how much I have worked.</li>
 </ol><h1>
-<a name="approach" class="anchor" href="#approach"><span class="octicon octicon-link"></span></a>Approach</h1>
+<a name="overview" class="anchor" href="#overview"><span class="octicon octicon-link"></span></a>Overview</h1>
 
-<p>The freelancer is now able to register (start/stop) intervals of time in which he/she worked on a specific project. He/She can add/remove/modify projects. He/She can then share the progress and working hours to the customers via permanent links. The freelancer can get a quantitative overview of his/her time spent for each project. The user interface is simple and effective.</p>
+<p>Freelancers are now able to register intervals of time in which they worked for specific projects. They can share their progress and working hours to the customers via permanent links. Freelancers can get an overview of their time spent for each task.</p>
 
 <p><img src="https://raw.github.com/vladm123/e-guitar/master/public/screenshots/overview.png" alt="Overview"></p>
 
@@ -48,27 +48,40 @@
 <a name="stack" class="anchor" href="#stack"><span class="octicon octicon-link"></span></a>Stack</h1>
 
 <ul>
-<li>Database: mongo</li>
-<li>Backend: node, express</li>
-<li>Frontend: jquery</li>
-<li>Test: mocha, should</li>
+<li>
+<strong>Database</strong>: <a href="http://www.mongodb.org/">mongodb</a>
+</li>
+<li>
+<strong>Backend</strong>: <a href="http://nodejs.org/">node</a>, <a href="http://expressjs.com/">express</a>
+</li>
+<li>
+<strong>Frontend</strong>: <a href="http://jquery.com/">jQuery</a>
+</li>
+<li>
+<strong>Test</strong>: <a href="http://visionmedia.github.io/mocha/">mocha</a>, <a href="https://github.com/visionmedia/should.js/">should</a>
+</li>
 </ul><h1>
 <a name="ui" class="anchor" href="#ui"><span class="octicon octicon-link"></span></a>UI</h1>
 
 <p><code>GET /</code>
-Shows information related to all projects, which can be:</p>
+Shows information related to all projects, which allow:</p>
 
 <ul>
-<li>added (by selecting the add option from the project manager)</li>
-<li>modified (by clicking on the project title and selecting the change option from the project manager)</li>
-<li>removed (by clicking on the project title and selecting the remove option from the project manager)</li>
+<li>
+<strong>add</strong>: select the add option from the project manager</li>
+<li>
+<strong>modify</strong>: click the project title and select the change option from the project manager</li>
+<li>
+<strong>remove</strong>: click the project title and select the remove option from the project manager</li>
 </ul><p><img src="https://raw.github.com/vladm123/e-guitar/master/public/screenshots/edit.png" alt="Edit project"></p>
 
 <p>Each project can contain zero or more tasks, which can be:</p>
 
 <ul>
-<li>start -&gt; work in progress (by clicking the + option from the project guitar string zone, which will add an orange empty circle)</li>
-<li>work in progress -&gt; complete (by clicking the project circle, which will change it to a green full circle)</li>
+<li>
+<strong>start -&gt; work in progress</strong>: click the + option from the project, which will make it orange and empty</li>
+<li>
+<strong>work in progress -&gt; complete</strong>: click the project circle, which will change it to green and full</li>
 </ul><p><img src="https://raw.github.com/vladm123/e-guitar/master/public/screenshots/finish.png" alt="Finish a task"></p>
 
 <p><code>GET /{identifier}</code>
