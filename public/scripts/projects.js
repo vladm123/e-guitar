@@ -173,7 +173,7 @@ function removeProject(id) {
 /* Ready logic */
 
 $(document).ready(function() {
-	GetProjects();
+	getProjects();
 	populateNewProject();
 	
 	$('body > div.project form.project input.add').on('click', addButtonClick);
