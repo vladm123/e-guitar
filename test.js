@@ -28,26 +28,43 @@ describe('Server is alive', function() {
 	it('Listens at the test host and port', function(done) {
 		this.timeout(maximumRuntime);
 		http.get({hostname:test.host, port:test.port, path:'/'}, function(result) {
-			result.statusCode.should.eql(200);
-			done();
+			try {
+				result.statusCode.should.eql(200);
+				done();
+			} catch (error) {
+				done(error);
+			}
 		}).on('error', function(error) {
-			true.should.be.false;
+			try {
+				true.should.be.false;
+			} catch (error) {
+				done(error);
+			}
 		});
 	});
 });
 
 describe('Project select all', function() {
 	before(function(done) {
+		this.timeout(maximumRuntime);
 		client.connect(connectionString, function(error, database) {
 			if (error) {
-				true.should.be.false;
+				try {
+					true.should.be.false;
+				} catch (error) {
+					done(error);
+				}
 			}
 			
 			// Remove all projects
 			database.collection(collectionName) 
 				.remove(function(error, removed) {
 					if (error) {
-						true.should.be.false;
+						try {
+							true.should.be.false;
+						} catch (error) {
+							done(error);
+						}
 					}
 				
 					// Add two projects
@@ -58,7 +75,11 @@ describe('Project select all', function() {
 							],
 							function(error, result) {
 								if (error) {
-									true.should.be.false;
+									try {
+										true.should.be.false;
+									} catch (error) {
+										done(error);
+									}
 								}
 								
 								done();
@@ -72,34 +93,50 @@ describe('Project select all', function() {
 		this.timeout(maximumRuntime);
 		client.connect(connectionString, function(error, database) {
 			if (error) {
-				true.should.be.false;
+				try {
+					true.should.be.false;
+				} catch (error) {
+					done(error);
+				}
 			}
 			
 			http.get({hostname:test.host, port:test.port, path:'/projects'}, 
 				function(result) {
-					result.statusCode.should.eql(200);
-					result.headers['content-type'].should.eql('application/json');
+					try {
+						result.statusCode.should.eql(200);
+						result.headers['content-type'].should.eql('application/json');
+					} catch (error) {
+						done(error);
+					}
 
 					var responseParts = [];
 					result.setEncoding('utf8');
-					result.on("data", function(chunk) {
+					result.on('data', function(chunk) {
 						responseParts.push(chunk);
 					});
-					result.on("end", function(){
+					result.on('end', function(){
 						var results = JSON.parse(responseParts.join(''));
 						
-						results.length.should.eql(2);
+						try {
+							results.length.should.eql(2);
 						
-						results[0].name.should.eql('P2');
-						expect(results[0].description).to.be.undefined;
+							results[0].name.should.eql('P2');
+							expect(results[0].description).to.be.undefined;
 						
-						results[1].name.should.eql('P1');
-						results[1].description.should.eql('D1');
+							results[1].name.should.eql('P1');
+							results[1].description.should.eql('D1');
 						
-						done();
+							done();
+						} catch (error) {
+							done(error);
+						}
 					});
 				}).on('error', function(error) {
-					true.should.be.false;
+					try {
+						true.should.be.false;
+					} catch (error) {
+						done(error);
+					}
 				});
 		});
 	});
@@ -109,42 +146,62 @@ describe('Project select all', function() {
 		this.timeout(maximumRuntime);
 		client.connect(connectionString, function(error, database) {
 			if (error) {
-				true.should.be.false;
+				try {
+					true.should.be.false;
+				} catch (error) {
+					done(error);
+				}
 			}
 			
 			http.get({hostname:test.host, port:test.port, path:'/projects'}, 
 				function(result) {
-					result.statusCode.should.eql(200);
-					result.headers['content-type'].should.eql('application/json');
+					try {
+						result.statusCode.should.eql(200);
+						result.headers['content-type'].should.eql('application/json');
+					} catch (error) {
+						done(error);
+					}
 
 					var responseParts = [];
 					result.setEncoding('utf8');
-					result.on("data", function(chunk) {
+					result.on('data', function(chunk) {
 						responseParts.push(chunk);
 					});
-					result.on("end", function(){
+					result.on('end', function(){
 						var results = JSON.parse(responseParts.join(''));
 						var id = results[0]._id;
 						http.get({hostname:test.host, port:test.port, path:'/projects/' + id}, 
 							function(innerResult) {
-								innerResult.statusCode.should.eql(200);
+								try {
+									innerResult.statusCode.should.eql(200);
+								} catch (error) {
+									done(error);
+								}
+									
 								var innerResponseParts = [];
 								innerResult.setEncoding('utf8');
-								innerResult.on("data", function(chunk) {
+								innerResult.on('data', function(chunk) {
 									innerResponseParts.push(chunk);
 								});
-								innerResult.on("end", function(){
+								innerResult.on('end', function(){
 									var innerResults = JSON.parse(innerResponseParts.join(''));
 									
-									innerResults.name.should.eql('P2');
-									expect(innerResults.description).to.be.undefined;
-									
-									done();
+									try {
+										innerResults.name.should.eql('P2');
+										expect(innerResults.description).to.be.undefined;
+										done();
+									} catch (error) {
+										done(error);
+									}
 								});
 							});
 					});
 				}).on('error', function(error) {
-					true.should.be.false;
+					try {
+						true.should.be.false;
+					} catch (error) {
+						done(error);
+					}
 				});
 		});
 	});
@@ -154,16 +211,28 @@ describe('Project select all', function() {
 		this.timeout(maximumRuntime);
 		client.connect(connectionString, function(error, database) {
 			if (error) {
-				true.should.be.false;
+				try {
+					true.should.be.false;
+				} catch (error) {
+					done(error);
+				}
 			}
 
 			var id = '000000000000000000000000';
 			http.get({hostname:test.host, port:test.port, path:'/projects/' + id}, 
 				function(innerResult) {
-					innerResult.statusCode.should.eql(404);
-					done();
+					try {
+						innerResult.statusCode.should.eql(404);
+						done();
+					} catch (error) {
+						done(error);
+					}
 				}).on('error', function(error) {
-					true.should.be.false;
+					try {
+						true.should.be.false;
+					} catch (error) {
+						done(error);
+					}
 				});
 			});
 	});
@@ -173,16 +242,28 @@ describe('Project select all', function() {
 		this.timeout(maximumRuntime);
 		client.connect(connectionString, function(error, database) {
 			if (error) {
-				true.should.be.false;
+				try {
+					true.should.be.false;
+				} catch (error) {
+					done(error);
+				}
 			}
 
 			var id = 'G00000000000000000000000';
 			http.get({hostname:test.host, port:test.port, path:'/projects/' + id},
 				function(innerResult) {
-					innerResult.statusCode.should.eql(400);
-					done();
+					try {
+						innerResult.statusCode.should.eql(400);
+						done();
+					} catch (error) {
+						done(error);
+					}
 				}).on('error', function(error) {
-					true.should.be.false;
+					try {
+						true.should.be.false;
+					} catch (error) {
+						done(error);
+					}
 				});
 		});
 	});	
@@ -190,16 +271,26 @@ describe('Project select all', function() {
 
 describe('Project insert', function() {
 	before(function(done) {
+		this.timeout(maximumRuntime);
+
 		client.connect(connectionString, function(error, database) {
 			if (error) {
-				true.should.be.false;
+				try {
+					true.should.be.false;
+				} catch (error) {
+					done(error);
+				}
 			}
 			
 			// Remove all projects
 			database.collection(collectionName) 
 				.remove(function(error, removed) {
 					if (error) {
-						true.should.be.false;
+						try {
+							true.should.be.false;
+						} catch (error) {
+							done(error);
+						}
 					}
 					
 					done();
@@ -212,7 +303,11 @@ describe('Project insert', function() {
 		this.timeout(maximumRuntime);
 		client.connect(connectionString, function(error, database) {
 			if (error) {
-				true.should.be.false;
+				try {
+					true.should.be.false;
+				} catch (error) {
+					done(error);
+				}
 			}
 			
 			var project = JSON.stringify({'name': 'P', 'description': 'D'});
@@ -228,28 +323,40 @@ describe('Project insert', function() {
 					}
 				}, 
 				function(result) {
-					result.statusCode.should.eql(201);
-					result.headers['content-type'].should.eql('application/json');
-  
+					try {
+						result.statusCode.should.eql(201);
+						result.headers['content-type'].should.eql('application/json');
+					} catch (error) {
+						done(error);
+					}
+
 					var responseParts = [];
 					result.setEncoding('utf8');
-					result.on("data", function(chunk) {
+					result.on('data', function(chunk) {
 						responseParts.push(chunk);
 					});
-					result.on("end", function(){
+					result.on('end', function(){
 						var innerResult = JSON.parse(responseParts.join(''));
+
+						try {
+							('/projects/' + innerResult._id)
+								.should.eql(result.headers['location']);
 						
-						('/projects/' + innerResult._id)
-							.should.eql(result.headers['location']);
+							innerResult.name.should.eql('P');
+							innerResult.description.should.eql('D');
+							innerResult.tasks.should.eql([]);
 						
-						innerResult.name.should.eql('P');
-						innerResult.description.should.eql('D');
-						innerResult.tasks.should.eql([]);
-						
-						done();
+							done();
+						} catch (error) {
+							done(error);
+						}
 					});
 				}).on('error', function(error) {
-					true.should.be.false;
+					try {
+						true.should.be.false;
+					} catch (error) {
+						done(error);
+					}
 				});
 			
 			request.write(project);
@@ -262,7 +369,11 @@ describe('Project insert', function() {
 		this.timeout(maximumRuntime);
 		client.connect(connectionString, function(error, database) {
 			if (error) {
-				true.should.be.false;
+				try {
+					true.should.be.false;
+				} catch (error) {
+					done(error);
+				}
 			}
 			
 			var project = JSON.stringify({'description': 'D'});
@@ -278,10 +389,19 @@ describe('Project insert', function() {
 					}
 				}, 
 				function(result) {
-					result.statusCode.should.eql(400);
-					done();
+					try {
+						result.statusCode.should.eql(400);
+						done();
+					} catch (error) {
+						done(error);
+					}
+
 				}).on('error', function(error) {
-					true.should.be.false;
+					try {
+						true.should.be.false;
+					} catch (error) {
+						done(error);
+					}
 				});
 			
 			request.write(project);
@@ -294,7 +414,11 @@ describe('Project insert', function() {
 		this.timeout(maximumRuntime);
 		client.connect(connectionString, function(error, database) {
 			if (error) {
-				true.should.be.false;
+				try {
+					true.should.be.false;
+				} catch (error) {
+					done(error);
+				}
 			}
 			
 			var project = JSON.stringify({'name': 'P'});
@@ -310,24 +434,36 @@ describe('Project insert', function() {
 					}
 				}, 
 				function(result) {
-					result.statusCode.should.eql(201);
-					result.headers['content-type'].should.eql('application/json');
+					try {
+						result.statusCode.should.eql(201);
+						result.headers['content-type'].should.eql('application/json');
+					} catch (error) {
+						done(error);
+					}
   
 					var responseParts = [];
 					result.setEncoding('utf8');
-					result.on("data", function(chunk) {
+					result.on('data', function(chunk) {
 						responseParts.push(chunk);
 					});
-					result.on("end", function(){
+					result.on('end', function(){
 						var innerResult = JSON.parse(responseParts.join(''));
 						
-						innerResult.name.should.eql('P');
-						expect(innerResult.description).to.be.undefined;
+						try {
+							innerResult.name.should.eql('P');
+							expect(innerResult.description).to.be.undefined;
 
-						done();
+							done();
+						} catch (error) {
+							done(error);
+						}
 					});
 				}).on('error', function(error) {
-					true.should.be.false;
+					try {
+						true.should.be.false;
+					} catch (error) {
+						done(error);
+					}
 				});
 			
 			request.write(project);
@@ -340,7 +476,11 @@ describe('Project insert', function() {
 		this.timeout(maximumRuntime);
 		client.connect(connectionString, function(error, database) {
 			if (error) {
-				true.should.be.false;
+				try {
+					true.should.be.false;
+				} catch (error) {
+					done(error);
+				}
 			}
 			
 			var project = JSON.stringify({'name': 'P', 'description': 'D', 'extra': 'E'});
@@ -356,27 +496,267 @@ describe('Project insert', function() {
 					}
 				}, 
 				function(result) {
-					result.statusCode.should.eql(201);
-					result.headers['content-type'].should.eql('application/json');
-  
+					try {
+						result.statusCode.should.eql(201);
+						result.headers['content-type'].should.eql('application/json');
+					} catch (error) {
+						done(error);
+					}
+
 					var responseParts = [];
 					result.setEncoding('utf8');
-					result.on("data", function(chunk) {
+					result.on('data', function(chunk) {
 						responseParts.push(chunk);
 					});
-					result.on("end", function(){
+					result.on('end', function(){
 						var innerResult = JSON.parse(responseParts.join(''));
 						
-						expect(innerResult.extra).to.be.undefined;
+						try {
+							expect(innerResult.extra).to.be.undefined;
 
-						done();
+							done();
+						} catch (error) {
+							done(error);
+						}
 					});
 				}).on('error', function(error) {
-					true.should.be.false;
+					try {
+						true.should.be.false;
+					} catch (error) {
+						done(error);
+					}
 				});
 			
 			request.write(project);
 			request.end();
+		});
+	});
+});
+
+describe('Project update', function() {
+	before(function(done) {
+		client.connect(connectionString, function(error, database) {
+			if (error) {
+				try {
+					true.should.be.false;
+				} catch (error) {
+					done(error);
+				}
+			}
+			
+			// Remove all projects
+			database.collection(collectionName) 
+				.remove(function(error, removed) {
+					if (error) {
+						try {
+							true.should.be.false;
+						} catch (error) {
+							done(error);
+						}
+					}
+					
+					done();
+				});
+		});
+	});
+
+	// Update a project
+	it('Updates a project', function(done) {
+		this.timeout(maximumRuntime);
+		client.connect(connectionString, function(error, database) {
+			if (error) {
+				try {
+					true.should.be.false;
+				} catch (error) {
+					done(error);
+				}
+			}
+			
+			var initialProject = JSON.stringify({'name': 'IP', 'description': 'ID'});
+			var updatedProject = JSON.stringify({'name': 'UP', 'description': 'UD'});
+			
+			var insertRequest = http.request({
+					method: 'POST', 
+					hostname:test.host, 
+					port:test.port, 
+					path:'/projects/insert',
+					headers: {
+						'Content-Type': 'application/json',
+						'Content-Length': initialProject.length
+					}
+				}, 
+				function(insertResult) {
+					try {
+						insertResult.statusCode.should.eql(201);
+					} catch (error) {
+						done(error);
+					}
+
+					var responseParts = [];
+					insertResult.setEncoding('utf8');
+					insertResult.on('data', function(chunk) {
+						responseParts.push(chunk);
+					});
+					insertResult.on('end', function(){
+						var insertInnerResult = JSON.parse(responseParts.join(''));
+
+						var updateRequest = http.request({
+							method: 'POST', 
+							hostname:test.host, 
+							port:test.port, 
+							path:'/projects/' + insertInnerResult._id + '/update',
+							headers: {
+								'Content-Type': 'application/json',
+								'Content-Length': updatedProject.length
+							}
+						},
+						function(updateResult) {
+							try {
+								updateResult.statusCode.should.eql(200);
+								updateResult.headers['content-type'].should.eql('application/json');
+							} catch (error) {
+								done(error);
+							}
+		  
+							var responseParts = [];
+							updateResult.setEncoding('utf8');
+							updateResult.on('data', function(chunk) {
+								responseParts.push(chunk);
+							});
+							updateResult.on('end', function(){
+								var updateInnerResult = JSON.parse(responseParts.join(''));
+								
+								try {
+									updateInnerResult.name.should.eql('UP');
+									updateInnerResult.description.should.eql('UD');
+									updateInnerResult.tasks.should.eql([]);
+	
+									done();
+								} catch (error) {
+									done(error);
+								}
+							});
+						}).on('error', function(error) {
+							try {
+								true.should.be.false;
+							} catch (error) {
+								done(error);
+							}
+						});
+
+						updateRequest.write(updatedProject);
+						updateRequest.end();
+					});
+				}).on('error', function(error) {
+					try {
+						true.should.be.false;
+					} catch (error) {
+						done(error);
+					}
+				});
+			
+			insertRequest.write(initialProject);
+			insertRequest.end();
+		});
+	});
+
+	// Update a project with a missing description
+	it('Updates a project with a missing description', function(done) {
+		this.timeout(maximumRuntime);
+		client.connect(connectionString, function(error, database) {
+			if (error) {
+				try {
+					true.should.be.false;
+				} catch (error) {
+					done(error);
+				}
+			}
+			
+			var initialProject = JSON.stringify({'name': 'IP', 'description': 'ID'});
+			var updatedProject = JSON.stringify({'name': 'UP'});
+			
+			var insertRequest = http.request({
+					method: 'POST', 
+					hostname:test.host, 
+					port:test.port, 
+					path:'/projects/insert',
+					headers: {
+						'Content-Type': 'application/json',
+						'Content-Length': initialProject.length
+					}
+				}, 
+				function(insertResult) {
+					try {
+						insertResult.statusCode.should.eql(201);
+					} catch (error) {
+						done(error);
+					}
+
+					var responseParts = [];
+					insertResult.setEncoding('utf8');
+					insertResult.on('data', function(chunk) {
+						responseParts.push(chunk);
+					});
+					insertResult.on('end', function(){
+						var insertInnerResult = JSON.parse(responseParts.join(''));
+
+						var updateRequest = http.request({
+							method: 'POST', 
+							hostname:test.host, 
+							port:test.port, 
+							path:'/projects/' + insertInnerResult._id + '/update',
+							headers: {
+								'Content-Type': 'application/json',
+								'Content-Length': updatedProject.length
+							}
+						},
+						function(updateResult) {
+							try {
+								updateResult.statusCode.should.eql(200);
+								updateResult.headers['content-type'].should.eql('application/json');
+							} catch (error) {
+								done(error);
+							}
+		  
+							var responseParts = [];
+							updateResult.setEncoding('utf8');
+							updateResult.on('data', function(chunk) {
+								responseParts.push(chunk);
+							});
+							updateResult.on('end', function(){
+								var updateInnerResult = JSON.parse(responseParts.join(''));
+								
+								try {
+									updateInnerResult.name.should.eql('UP');
+									expect(updateInnerResult.description).to.be.undefined;
+									updateInnerResult.tasks.should.eql([]);
+	
+									done();
+								} catch (error) {
+									done(error);
+								}
+							});
+						}).on('error', function(error) {
+							try {
+								true.should.be.false;
+							} catch (error) {
+								done(error);
+							}
+						});
+
+						updateRequest.write(updatedProject);
+						updateRequest.end();
+					});
+				}).on('error', function(error) {
+					try {
+						true.should.be.false;
+					} catch (error) {
+						done(error);
+					}
+				});
+			
+			insertRequest.write(initialProject);
+			insertRequest.end();
 		});
 	});
 });

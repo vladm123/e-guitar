@@ -27,8 +27,6 @@ exports.selectAll = function(request, response) {
 exports.selectById = function(request, response) {
     var id = request.params.id;
 	
-	console.log(id);
-    
     // ID is a 24-hex string.
     if (!(id.match(idRegex))) {
         response.send(400, "Invalid project identifier.");
