@@ -3,3 +3,7 @@ install dependencies:
 
 run the app:
     $ node app
+	
+test the app:
+	$ node app
+	$ mocha test
