@@ -1,3 +1,6 @@
+/* Population of projects */
+
+// Populates a project by creating a HTML container and filling it.
 function populateProject(index, project) {
 	$projectContainer = $('<div></div>')
 		.attr('id', project._id)
@@ -9,6 +12,7 @@ function populateProject(index, project) {
 		.html('this project took ' + computeTotalHours(project.tasks) + ' » ')
 		.appendTo($projectContainer);
 	$permalink = $('<a></a>')
+		// TODO fetch the host and port
 		.attr('href', 'http://localhost:3000/' + project._id)
 		.attr('title', 'Click to see this project only')
 		.html('permalink')
@@ -52,13 +56,9 @@ function populateProject(index, project) {
 		});
 }
 
-function populateProjects() {
-	$.get('http://localhost:3000/projects', function(projects) {
-		$('body > div.all').empty();
-		$.each(projects, populateProject);
-	});
-}
+/* Project manager container */
 
+// Populates the project manager to enter the add project state.
 function populateNewProject() {
 	$newProjectDiv = $('body > div.project');
 	$newProjectDiv.find('input.id').val('');
@@ -71,6 +71,7 @@ function populateNewProject() {
 	$newProjectDiv.find('input.close').hide();
 }
 
+// Populates the project manager to enter the project details state.
 function populateEditProject(id, name, description) {
 	$newProjectDiv = $('body > div.project');
 	$newProjectDiv.find('input.id').val(id);
@@ -83,28 +84,76 @@ function populateEditProject(id, name, description) {
 	$newProjectDiv.find('input.close').show();
 }
 
+// Project manager add button click handler.
+function addButtonClick() {
+	name = $('body > div.project form.project input.name').val();
+	description = $('body > div.project form.project input.description').val();
+	addProject(name, description);
+}
+
+// Project manager edit button click handler.
+function editButtonClick() {
+	id = $('body > div.project form.project input.id').val();
+	name = $('body > div.project form.project input.name').val();
+	description = $('body > div.project form.project input.description').val();
+	editProject(id, name, description);
+}
+
+// Project manager remove button click handler.
+function removeButtonClick() {
+	// Do you really want to remove the project?
+	if (!confirm("This project will be deleted. " +
+			"Click OK to continue and Cancel to keep it.")) {
+		return;
+	}
+
+	id = $('body > div.project form.project input.id').val();
+	removeProject(id);
+}
+
+/* Task CRUD operations */
+
+// Adds a task
 function addTask(id) {
 	$.post('http://localhost:3000/projects/' + id + 
-		'/tasks/insert', {}, function(project) {
+		'/tasks/insert', {}, 
+		function(project) {
 			$('body > div.all > div#' + id).remove();
 			populateProject(0, project);
 		});
 }
 
+// Updates a task
 function updateTask(id, start, end) {
-	$.post('http://localhost:3000/projects/' + id + '/tasks/update', {start: start, end: end}, function(project) {
-		$('body > div.all > div#' + id).remove();
-		populateProject(0, project);
+	$.post('http://localhost:3000/projects/' + id + 
+		'/tasks/update', {start: start, end: end}, 
+		function(project) {
+			$('body > div.all > div#' + id).remove();
+			populateProject(0, project);
+		});
+}
+
+/* Project CRUD operations */
+
+// Gets the projects.
+function getProjects() {
+	$.get('http://localhost:3000/projects', function(projects) {
+		$('body > div.all').empty();
+		$.each(projects, populateProject);
 	});
 }
 
+// Adds a project
 function addProject(name, description) {
-	$.post('http://localhost:3000/projects/insert', {name: name, description: description}, function(project) {
-		populateProject(0, project);
-		populateNewProject();
-	});
+	$.post('http://localhost:3000/projects/insert', 
+		{name: name, description: description}, 
+		function(project) {
+			populateProject(0, project);
+			populateNewProject();
+		});
 }
 
+// Edits a project
 function editProject(id, name, description) {
 	$.post('http://localhost:3000/projects/' + id + '/update', {name: name, description: description}, function(project) {
 		$('body > div.all > div#' + id).remove();
@@ -113,6 +162,7 @@ function editProject(id, name, description) {
 	});
 }
 
+// Removes a project
 function removeProject(id) {
 	$.post('http://localhost:3000/projects/' + id + '/delete', {}, function(project) {
 		$('body > div.all > div#' + id).remove();
@@ -120,35 +170,14 @@ function removeProject(id) {
 	});
 }
 
+/* Ready logic */
+
 $(document).ready(function() {
-	populateProjects();
+	GetProjects();
 	populateNewProject();
 	
-	$('body > div.project form.project input.add').on('click', function(event) {
-		name = $('body > div.project form.project input.name').val();
-		description = $('body > div.project form.project input.description').val();
-		addProject(name, description);
-	});
-	
-	$('body > div.project form.project input.edit').on('click', function(event) {
-		id = $('body > div.project form.project input.id').val();
-		name = $('body > div.project form.project input.name').val();
-		description = $('body > div.project form.project input.description').val();
-		editProject(id, name, description);
-	});
-
-	$('body > div.project form.project input.remove').on('click', function(event) {
-	
-		// Do you really want to remove the project?
-		if (!confirm("This project will be deleted. Click OK to continue and Cancel to keep it.")) {
-			return;
-		}
-
-		id = $('body > div.project form.project input.id').val();
-		removeProject(id);
-	});
-
-	$('body > div.project form.project input.close').on('click', function(event) {
-		populateNewProject();
-	});
+	$('body > div.project form.project input.add').on('click', addButtonClick);
+	$('body > div.project form.project input.edit').on('click', editButtonClick);
+	$('body > div.project form.project input.remove').on('click', removeButtonClick);
+	$('body > div.project form.project input.close').on('click', populateNewProject);
 });

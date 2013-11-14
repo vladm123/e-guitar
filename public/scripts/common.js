@@ -116,6 +116,8 @@ function populateTasks(id, tasks, $container) {
 	}
 }
 
+// Computes the total hours spent for tasks.
+// The tasks that have not ended have timings counted towards now.
 function computeTotalHours(tasks) {
 	var now = new Date().getTime();
 	var sum = 0;

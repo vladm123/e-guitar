@@ -1,9 +1,6 @@
-function populateProjects(projectid) {
-	$.get('http://localhost:3000/projects/' + projectid, function(project) {
-		populateProject(0, project);
-	});
-}
+/* Project population */
 
+// Populates the project
 function populateProject(index, project) {
 	$projectContainer = $('<div></div>')
 		.attr('id', project._id)
@@ -15,6 +12,7 @@ function populateProject(index, project) {
 		.html(' « this project took ' + computeTotalHours(project.tasks))
 		.appendTo($projectContainer);
 	$permalink = $('<a></a>')
+		// TODO fetch the host and port
 		.attr('href', 'http://localhost:3000')
 		.attr('title', 'Click to see all projects')
 		.html('projects')
@@ -39,6 +37,15 @@ function populateProject(index, project) {
 	}
 }
 
+// Gets the project by id
+function getProject(projectid) {
+	$.get('http://localhost:3000/projects/' + projectid, function(project) {
+		populateProject(0, project);
+	});
+}
+
+/* Ready logic */
+
 $(document).ready(function() {
-	populateProjects(projectid);
+	getProject(projectid);
 });
